@@ -145,7 +145,8 @@ header p{
 
 .canvas{
   position:relative;
-  width: 1800px;
+  width: 1200px;
+  max-width: 100%;
   margin:0 auto;
   border-radius:14px;
   background:
@@ -154,7 +155,7 @@ header p{
   background-size: 25px 25px;
   background-color: rgba(15,23,48,.55);
   outline:1px solid rgba(232,236,255,.12);
-  padding:30px;
+  padding:20px;
   transition: transform 0.3s ease;
 }
 
@@ -162,10 +163,11 @@ header p{
 .infra-layer{
   position:relative;
   border-radius:16px;
-  padding:14px;
-  margin-bottom:20px;
+  padding:12px;
+  margin-bottom:16px;
   border:2px solid;
   max-width: 100%;
+  width: 100%;
 }
 
 .layer-physical{
@@ -221,20 +223,22 @@ header p{
   border-radius:12px;
   border:2px dashed rgba(139,92,246,.4);
   background: rgba(139,92,246,.05);
-  padding:12px;
-  margin-bottom:16px;
+  padding:10px;
+  margin-bottom:12px;
   max-width: 100%;
+  width: 100%;
 }
 
 .vm-header{
   display:flex;
   align-items:center;
-  gap:8px;
-  margin-bottom:10px;
-  padding:8px 10px;
+  gap:6px;
+  margin-bottom:8px;
+  padding:6px 8px;
   background: rgba(139,92,246,.12);
   border-radius:8px;
   border:1px solid rgba(139,92,246,.3);
+  flex-wrap: wrap;
 }
 
 .vm-title{
@@ -245,9 +249,10 @@ header p{
 }
 
 .vm-specs{
-  font-size:10px;
+  font-size:9px;
   color:var(--muted);
   margin-left:auto;
+  white-space: nowrap;
 }
 
 /* OS layer inside VM */
@@ -255,19 +260,21 @@ header p{
   border-radius:10px;
   border:2px solid rgba(14,165,233,.4);
   background: rgba(14,165,233,.05);
-  padding:10px;
-  margin-bottom:10px;
+  padding:8px;
+  margin-bottom:8px;
   max-width: 100%;
+  width: 100%;
 }
 
 .os-header{
   display:flex;
   align-items:center;
-  gap:6px;
-  margin-bottom:8px;
-  padding:6px 8px;
+  gap:5px;
+  margin-bottom:6px;
+  padding:5px 6px;
   background: rgba(14,165,233,.12);
   border-radius:6px;
+  flex-wrap: wrap;
 }
 
 .os-title{
@@ -281,20 +288,22 @@ header p{
   border-radius:10px;
   border:2px solid rgba(96,165,250,.5);
   background: rgba(96,165,250,.08);
-  padding:10px;
-  margin-bottom:10px;
+  padding:8px;
+  margin-bottom:8px;
   max-width: 100%;
+  width: 100%;
 }
 
 .instance-header{
   display:flex;
   align-items:center;
-  gap:6px;
-  margin-bottom:8px;
-  padding:6px 8px;
+  gap:5px;
+  margin-bottom:6px;
+  padding:5px 6px;
   background: rgba(96,165,250,.15);
   border-radius:6px;
   border:1px solid rgba(96,165,250,.3);
+  flex-wrap: wrap;
 }
 
 .instance-title{
@@ -304,19 +313,21 @@ header p{
 }
 
 .instance-id{
-  font-size:10.5px;
+  font-size:9px;
   color:var(--muted);
-  margin-left:8px;
+  margin-left:6px;
+  white-space: nowrap;
 }
 
 /* Process boxes */
 .process-box{
   border-radius:8px;
   border:1.5px solid;
-  padding:10px;
-  margin-bottom:8px;
+  padding:8px;
+  margin-bottom:6px;
   background: rgba(15,23,48,.85);
   max-width: 100%;
+  width: 100%;
 }
 
 .process-box.icm{
@@ -361,15 +372,15 @@ header p{
 }
 
 .process-details{
-  font-size:10.5px;
+  font-size:9px;
   color:var(--muted);
-  padding-left:16px;
-  margin:6px 0 0;
+  padding-left:12px;
+  margin:4px 0 0;
 }
 
 .process-details li{
-  margin-bottom:3px;
-  line-height:1.4;
+  margin-bottom:2px;
+  line-height:1.3;
 }
 
 /* JVM internal structure */
@@ -415,17 +426,20 @@ header p{
 /* Grid layouts */
 .grid{
   display:grid;
-  gap:14px;
+  gap:10px;
+  width: 100%;
 }
 
 .grid-2{
   grid-template-columns: repeat(2, 1fr);
   max-width: 100%;
+  width: 100%;
 }
 
 .grid-3{
   grid-template-columns: repeat(3, 1fr);
   max-width: 100%;
+  width: 100%;
 }
 
 /* Tags and badges */
@@ -505,21 +519,23 @@ header p{
 
 /* Network/External layer */
 .external-layer{
-  padding:14px;
-  margin-bottom:20px;
+  padding:12px;
+  margin-bottom:16px;
   border-radius:16px;
   border:2px solid rgba(34,197,94,.5);
   background: linear-gradient(135deg, rgba(34,197,94,.08), rgba(34,197,94,.03));
   max-width: 100%;
+  width: 100%;
 }
 
 .box{
   border-radius:10px;
   border:1.5px solid rgba(232,236,255,.25);
   background: rgba(15,23,48,.9);
-  padding:10px;
+  padding:8px;
   box-shadow: 0 6px 16px rgba(0,0,0,.3);
   max-width: 100%;
+  width: 100%;
 }
 
 .box-title{
