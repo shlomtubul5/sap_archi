@@ -1,5 +1,6 @@
 let currentZoom = 1;
 let canvas, zoomLevel, shell;
+let javaAppServerCount = 0;
 
 function initializeZoom() {
   canvas = document.getElementById("canvas");
@@ -28,6 +29,13 @@ function initializeZoom() {
       );
       vmWidthValue.textContent = `${value}px`;
     });
+  }
+
+  // Initialize Java app server count from DOM
+  const javaLevelContent = getJavaAppServerLevelContent();
+  if (javaLevelContent) {
+    javaAppServerCount =
+      javaLevelContent.querySelectorAll(".vm-container").length;
   }
 
   if (shell) {
@@ -79,6 +87,74 @@ function resetZoom() {
   currentZoom = 1;
   updateZoom();
   if (shell) shell.scrollTop = 0;
+}
+
+// Helpers for scaling Java app servers
+function getJavaAppServerLevelContent() {
+  const levelTitles = document.querySelectorAll(".vm-level-title");
+  for (const title of levelTitles) {
+    if (title.textContent.includes("Java Application Servers")) {
+      const level = title.parentElement;
+      return level.querySelector(".vm-level-content");
+    }
+  }
+  return null;
+}
+
+function addJavaAppServer() {
+  const javaLevelContent = getJavaAppServerLevelContent();
+  if (!javaLevelContent) return;
+
+  const templateVm = javaLevelContent.querySelector(".vm-container");
+  if (!templateVm) return;
+
+  // Clone the first Java app server VM
+  const newVm = templateVm.cloneNode(true);
+
+  javaAppServerCount += 1;
+  const index = javaAppServerCount; // 1-based index
+
+  // Update host name
+  const vmTitle = newVm.querySelector(".vm-title");
+  if (vmTitle) {
+    vmTitle.textContent = `VM/Host: sap-java-app-0${index}`;
+  }
+
+  // Update instance title and ID
+  const instanceTitle = newVm.querySelector(".instance-title");
+  if (instanceTitle) {
+    instanceTitle.textContent = `SAP Instance: JC0${index}`;
+  }
+  const instanceId = newVm.querySelector(".instance-id");
+  if (instanceId) {
+    instanceId.textContent = `SID: J2E, Instance#: 0${index}`;
+  }
+
+  // Re-attach click handlers to elements inside the cloned VM
+  const clickableElements = newVm.querySelectorAll(
+    ".box, .vm-container, .os-layer, .sap-instance, .process-box"
+  );
+  clickableElements.forEach((element) => {
+    element.addEventListener("click", (e) => {
+      e.stopPropagation();
+      showComponentInfo(element);
+    });
+  });
+
+  javaLevelContent.appendChild(newVm);
+}
+
+function removeJavaAppServer() {
+  const javaLevelContent = getJavaAppServerLevelContent();
+  if (!javaLevelContent) return;
+
+  const vms = javaLevelContent.querySelectorAll(".vm-container");
+  // Keep at least one Java app server
+  if (vms.length <= 1) return;
+
+  const lastVm = vms[vms.length - 1];
+  javaLevelContent.removeChild(lastVm);
+  javaAppServerCount = Math.max(1, javaAppServerCount - 1);
 }
 
 // Component Modal Functions

@@ -117,6 +117,12 @@ header p {
   accent-color: #60a5fa;
 }
 
+.scaling-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .zoom-controls {
   display: flex;
   gap: 8px;
