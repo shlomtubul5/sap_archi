@@ -194,6 +194,25 @@ header p {
   width: 100%;
 }
 
+/* VM levels (rows of VMs by category) */
+.vm-level {
+  margin-bottom: 16px;
+}
+
+.vm-level-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 6px 2px;
+}
+
+.vm-level-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .layer-physical {
   border-color: rgba(100, 116, 139, 0.5);
   background: linear-gradient(
@@ -262,7 +281,8 @@ header p {
   padding: 10px;
   margin-bottom: 12px;
   max-width: 100%;
-  width: 100%;
+  /* Let flexbox control width inside vm-level-content */
+  flex: 1 1 260px;
 }
 
 .vm-header {
