@@ -18,7 +18,16 @@
 
     <main class="wrap">
       <section class="controls">
-        <div class="zoom-controls">
+        <div class="view-switcher">
+          <button class="view-btn active" id="topologyViewBtn" onclick="switchView('topology')">
+            Topology View
+          </button>
+          <button class="view-btn" id="flowViewBtn" onclick="switchView('flow')">
+            Flow View
+          </button>
+        </div>
+
+        <div class="zoom-controls" id="topologyControls">
           <button class="zoom-btn" onclick="zoomOut()">−</button>
           <div class="zoom-level" id="zoomLevel">100%</div>
           <button class="zoom-btn" onclick="zoomIn()">+</button>
@@ -37,13 +46,25 @@
           <span id="vmWidthValue"></span>
         </div>
 
-        <div class="scaling-controls">
+        <div class="scaling-controls" id="topologyControls2">
           <button class="zoom-btn" onclick="addJavaAppServer()">
             + Java App Server
           </button>
           <button class="zoom-btn" onclick="removeJavaAppServer()">
             − Java App Server
           </button>
+        </div>
+
+        <div class="flow-controls" id="flowControls" style="display: none;">
+          <select id="flowSelector" class="flow-select">
+            <option value="http">Flow 1: User HTTP Request</option>
+            <option value="cluster">Flow 2: Java Cluster Coordination</option>
+            <option value="startup">Flow 3: System Startup</option>
+          </select>
+          <button class="zoom-btn" id="playPauseBtn" onclick="togglePlayPause()">▶ Play</button>
+          <button class="zoom-btn" onclick="stepBackward()">◀◀ Step Back</button>
+          <button class="zoom-btn" onclick="stepForward()">Step Forward ▶▶</button>
+          <button class="zoom-btn" onclick="restartFlow()">↻ Restart</button>
         </div>
 
         <div class="legend">
@@ -76,7 +97,8 @@
         </div>
       </section>
 
-      <section class="diagram-shell" id="diagramShell">
+      <!-- Topology View -->
+      <section class="diagram-shell" id="topologyView">
         <div class="canvas-wrapper">
           <div class="canvas" id="canvas">
             <!-- EXTERNAL / NETWORK LAYER -->
@@ -755,6 +777,113 @@
                   datacenter, keep standby VMs ready
                 </li>
               </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+      <!-- Flow View -->
+      <section class="flow-view-shell" id="flowView" style="display: none;">
+        <div class="flow-view-container">
+          <div class="flow-canvas" id="flowCanvas">
+            <!-- Components will be positioned here -->
+            <div class="flow-component" id="client" data-component="client">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">Client / Browser</div>
+              </div>
+            </div>
+            
+            <div class="flow-component" id="loadbalancer" data-component="loadbalancer">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">Load Balancer / Web Dispatcher</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="icm-pas" data-component="icm">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">ICM (PAS)</div>
+                <div class="flow-comp-subtitle">Instance 01</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="icm-aas" data-component="icm">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">ICM (AAS)</div>
+                <div class="flow-comp-subtitle">Instance 02</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="dispatcher-pas" data-component="dispatcher">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">Java Dispatcher (PAS)</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="dispatcher-aas" data-component="dispatcher">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">Java Dispatcher (AAS)</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="jvm-pas-0" data-component="jvm">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">JVM Server 0</div>
+                <div class="flow-comp-subtitle">PAS</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="jvm-pas-1" data-component="jvm">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">JVM Server 1</div>
+                <div class="flow-comp-subtitle">PAS</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="jvm-aas-0" data-component="jvm">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">JVM Server 0</div>
+                <div class="flow-comp-subtitle">AAS</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="database" data-component="database">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">Database</div>
+                <div class="flow-comp-subtitle">HANA</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="messageserver" data-component="messageserver">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">Message Server</div>
+                <div class="flow-comp-subtitle">Central Services</div>
+              </div>
+            </div>
+
+            <div class="flow-component" id="enqueueserver" data-component="enqueueserver">
+              <div class="flow-comp-box">
+                <div class="flow-comp-title">Enqueue Server</div>
+                <div class="flow-comp-subtitle">Central Services</div>
+              </div>
+            </div>
+
+            <!-- Animated arrows will be created dynamically -->
+          </div>
+
+          <div class="flow-explanation-panel" id="flowExplanationPanel">
+            <div class="explanation-header">
+              <h3>Architecture Flow Explanation</h3>
+            </div>
+            <div class="explanation-content" id="explanationContent">
+              <div class="explanation-step">
+                <h4 id="stepTitle">Select a flow to begin</h4>
+                <ul id="stepBullets">
+                  <li>Choose a flow from the dropdown above</li>
+                  <li>Click Play to start the animation</li>
+                  <li>Use Step Forward/Back to navigate manually</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
