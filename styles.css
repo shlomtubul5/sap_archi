@@ -154,9 +154,10 @@ header p {
   border: 1px solid var(--line);
   border-radius: 16px;
   box-shadow: var(--shadow);
-  overflow: auto;
+  /* Let the main page handle scrolling so we only have one scrollbar */
+  overflow: visible;
   padding: 0;
-  height: calc(100vh - 260px);
+  height: auto;
   min-height: 700px;
 }
 
