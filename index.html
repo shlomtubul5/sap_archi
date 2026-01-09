@@ -166,73 +166,72 @@
                           <span style="font-size: 14px">⚙️</span>
                           <h5 class="instance-title">SAP Instance: ASCS00</h5>
                           <span class="badge badge-sap">Central Services</span>
+                          <span class="badge-role">ASCS</span>
                           <span class="instance-id"
                             >SID: J2E, Instance#: 00</span
                           >
                         </div>
 
-                        <div class="process-box msg">
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            Message Server (msg_server)
-                          </p>
-                          <p class="process-desc">
-                            Central communication hub for entire SAP system
-                          </p>
-                          <ul class="process-details">
-                            <li><b>Port:</b> 36XX (3600 for instance 00)</li>
-                            <li>
-                              <b>Function:</b> Maintains server list, load
-                              balancing info
-                            </li>
-                            <li>
-                              <b>Protocol:</b> SAP Message Server protocol
-                            </li>
-                            <li>
-                              <b>Connects to:</b> All Java app server instances
-                            </li>
-                          </ul>
-                        </div>
+                        <div class="plane-label">Control Plane</div>
+                        <div class="plane-group">
+                          <div class="process-box msg">
+                            <p class="process-title">
+                              <span class="badge badge-process">Process</span>
+                              Message Server (msg_server)
+                            </p>
+                            <p class="process-desc">
+                              Cluster-wide control service that maintains the
+                              server list and load-balancing information; no
+                              user traffic or application logic.
+                            </p>
+                            <ul class="process-details">
+                              <li><b>Port:</b> 36XX (3600 for instance 00)</li>
+                              <li>
+                                <b>Protocol:</b> SAP Message Server protocol
+                              </li>
+                              <li>
+                                <b>Connects to:</b> All Java application server
+                                instances
+                              </li>
+                            </ul>
+                          </div>
 
-                        <div class="process-box enq">
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            Enqueue Server (enserver)
-                          </p>
-                          <p class="process-desc">
-                            Central lock table for distributed locks
-                          </p>
-                          <ul class="process-details">
-                            <li><b>Port:</b> 32XX (3200 for instance 00)</li>
-                            <li>
-                              <b>Function:</b> Transaction locks, serialization
-                            </li>
-                            <li><b>Lock Table:</b> Stored in shared memory</li>
-                            <li>
-                              <b>Critical for:</b> Data consistency across
-                              cluster
-                            </li>
-                          </ul>
-                        </div>
+                          <div class="process-box enq">
+                            <p class="process-title">
+                              <span class="badge badge-process">Process</span>
+                              Enqueue Server (enserver)
+                            </p>
+                            <p class="process-desc">
+                              Central lock table for distributed locks; ensures
+                              data consistency across the Java cluster.
+                            </p>
+                            <ul class="process-details">
+                              <li><b>Port:</b> 32XX (3200 for instance 00)</li>
+                              <li>
+                                <b>Lock Table:</b> Stored in shared memory
+                              </li>
+                            </ul>
+                          </div>
 
-                        <div
-                          class="process-box"
-                          style="border-color: rgba(96, 165, 250, 0.5)"
-                        >
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            sapstartsrv
-                          </p>
-                          <p class="process-desc">
-                            Instance control daemon (start/stop/status)
-                          </p>
-                          <ul class="process-details">
-                            <li><b>Port:</b> 5XX00 (SOAP/HTTP)</li>
-                            <li><b>Started by:</b> OS init system (systemd)</li>
-                            <li>
-                              <b>Controls:</b> Message Server, Enqueue Server
-                            </li>
-                          </ul>
+                          <div
+                            class="process-box"
+                            style="border-color: rgba(96, 165, 250, 0.5)"
+                          >
+                            <p class="process-title">
+                              <span class="badge badge-process">Process</span>
+                              sapstartsrv
+                            </p>
+                            <p class="process-desc">
+                              Local instance control daemon that can start,
+                              stop, and monitor ASCS processes.
+                            </p>
+                            <ul class="process-details">
+                              <li><b>Port:</b> 5XX00 (SOAP/HTTP)</li>
+                              <li>
+                                <b>Started by:</b> OS init system (systemd)
+                              </li>
+                            </ul>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -276,234 +275,252 @@
                           <span style="font-size: 14px">☕</span>
                           <h5 class="instance-title">SAP Instance: JC01</h5>
                           <span class="badge badge-sap"
-                            >Java Central Instance</span
+                            >SAP Java Engine (Java EE compatible runtime)</span
                           >
+                          <span class="badge-role">PAS</span>
                           <span class="instance-id"
                             >SID: J2E, Instance#: 01</span
                           >
                         </div>
 
-                        <div class="process-box icm">
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            ICM (Internet Communication Manager)
-                          </p>
-                          <p class="process-desc">
-                            HTTP(S) entry point - native C++ process
-                          </p>
-                          <ul class="process-details">
-                            <li>
-                              <b>Ports:</b> 80XX (8001), 443XX (44301) for HTTPS
-                            </li>
-                            <li>
-                              <b>Function:</b> Accept HTTP requests, TLS
-                              handling
-                            </li>
-                            <li>
-                              <b>Forwards to:</b> Dispatcher via local IPC
-                            </li>
-                            <li>
-                              <b>Binary:</b> /usr/sap/.../icman (C++ executable)
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div class="process-box dispatcher">
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            Dispatcher (disp+work)
-                          </p>
-                          <p class="process-desc">
-                            Request router - native C++ process
-                          </p>
-                          <ul class="process-details">
-                            <li>
-                              <b>Port:</b> P4 port for internal communication
-                            </li>
-                            <li>
-                              <b>Function:</b> Load balance to JVM nodes,
-                              session affinity
-                            </li>
-                            <li>
-                              <b>Manages:</b> Node list, health checks, failover
-                            </li>
-                            <li>
-                              <b>Connects to:</b> Message Server for cluster
-                              info
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div
-                          class="process-box"
-                          style="border-color: rgba(96, 165, 250, 0.5)"
-                        >
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            sapstartsrv
-                          </p>
-                          <p class="process-desc">
-                            Controls this instance's processes
-                          </p>
-                          <ul class="process-details">
-                            <li>
-                              <b>Starts:</b> ICM, Dispatcher, JVM nodes via
-                              jstart
-                            </li>
-                            <li>
-                              <b>Monitors:</b> Process health, automatic restart
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div class="process-box jvm">
-                          <p class="process-title">
-                            <span class="badge badge-process">JVM Process</span>
-                            Java Server Node 0 (server0)
-                          </p>
-                          <p class="process-desc">
-                            SAP JVM instance running Java EE application server
-                          </p>
-                          <ul class="process-details">
-                            <li><b>Started by:</b> jstart (Java launcher)</li>
-                            <li>
-                              <b>JVM Heap:</b> -Xmx4096M (configured in instance
-                              profile)
-                            </li>
-                            <li>
-                              <b>P4 Port:</b> 5XX04 (for dispatcher
-                              communication)
-                            </li>
-                            <li>
-                              <b>Debug Port:</b> 5XX08 (if debugging enabled)
-                            </li>
-                          </ul>
-
-                          <div class="jvm-internals">
-                            <p
-                              style="
-                                font-size: 11px;
-                                font-weight: 700;
-                                margin: 0 0 8px;
-                                color: var(--ink);
-                              "
-                            >
-                              Inside JVM Process Memory:
+                        <div class="plane-label">Control Plane</div>
+                        <div class="plane-group">
+                          <div
+                            class="process-box"
+                            style="border-color: rgba(96, 165, 250, 0.5)"
+                          >
+                            <p class="process-title">
+                              <span class="badge badge-process">Process</span>
+                              sapstartsrv
                             </p>
-
-                            <div class="jvm-section">
-                              <p class="jvm-section-title">
-                                🔹 Java EE / Jakarta EE Runtime
-                              </p>
-                              <ul class="jvm-items">
-                                <li>
-                                  Servlet Container - handles HTTP requests from
-                                  dispatcher
-                                </li>
-                                <li>
-                                  EJB Container - business logic components
-                                </li>
-                                <li>
-                                  Web Services Runtime - SOAP/REST endpoints
-                                </li>
-                                <li>
-                                  JPA / Persistence - ORM for database access
-                                </li>
-                                <li>JMS Provider - asynchronous messaging</li>
-                              </ul>
-                            </div>
-
-                            <div class="jvm-section">
-                              <p class="jvm-section-title">
-                                🔹 SAP Java Engine Services
-                              </p>
-                              <ul class="jvm-items">
-                                <li>
-                                  Service Framework - lifecycle management of
-                                  SAP services
-                                </li>
-                                <li>
-                                  Deploy Service - handles SCA/SDA deployment
-                                </li>
-                                <li>
-                                  Cluster Service - communicates with Message
-                                  Server
-                                </li>
-                                <li>
-                                  Locking Service - interacts with Enqueue
-                                  Server
-                                </li>
-                                <li>
-                                  Configuration Service - reads/writes config to
-                                  DB
-                                </li>
-                                <li>
-                                  Log & Trace Service - application logging
-                                </li>
-                              </ul>
-                            </div>
-
-                            <div class="jvm-section">
-                              <p class="jvm-section-title">
-                                🔹 Deployed Applications
-                              </p>
-                              <ul class="jvm-items">
-                                <li>Web Dynpro Runtime - UI framework</li>
-                                <li>
-                                  SAP NetWeaver Portal - portal server runtime
-                                </li>
-                                <li>
-                                  Custom Java Applications - business apps
-                                </li>
-                                <li>
-                                  SAP JCo - RFC connector for ABAP systems
-                                </li>
-                                <li>JDBC Drivers - database connectivity</li>
-                              </ul>
-                            </div>
-
-                            <div class="jvm-section">
-                              <p class="jvm-section-title">
-                                🔹 Thread Pools & Resources
-                              </p>
-                              <ul class="jvm-items">
-                                <li>
-                                  HTTP Worker Threads - process servlet requests
-                                </li>
-                                <li>EJB Thread Pool - handle EJB calls</li>
-                                <li>
-                                  Connection Pools - JDBC, JCo, JMS connections
-                                </li>
-                                <li>Session Manager - HTTP session cache</li>
-                              </ul>
-                            </div>
+                            <p class="process-desc">
+                              Local control service that starts, stops, and
+                              monitors ICM, Java Dispatcher, and JVM server
+                              nodes.
+                            </p>
+                            <ul class="process-details">
+                              <li>
+                                <b>Starts:</b> ICM, Java Dispatcher, JVM nodes
+                                via jstart
+                              </li>
+                            </ul>
                           </div>
                         </div>
 
-                        <div class="process-box jvm">
-                          <p class="process-title">
-                            <span class="badge badge-process">JVM Process</span>
-                            Java Server Node 1 (server1)
-                          </p>
-                          <p class="process-desc">
-                            Second JVM instance for parallel request processing
-                          </p>
-                          <ul class="process-details">
-                            <li>
-                              <b>Same structure as Node 0</b> - independent JVM
-                            </li>
-                            <li>
-                              <b>JVM Heap:</b> -Xmx4096M (separate memory space)
-                            </li>
-                            <li><b>P4 Port:</b> 5XX05</li>
-                            <li>
-                              <b>Purpose:</b> Horizontal scaling within same VM
-                            </li>
-                            <li>
-                              <b>Session Sharing:</b> Via database or cluster
-                              replication
-                            </li>
-                          </ul>
+                        <div class="plane-label">Execution Plane</div>
+                        <div class="plane-group">
+                          <div class="process-box icm">
+                            <p class="process-title">
+                              <span class="badge badge-process">Process</span>
+                              ICM (Internet Communication Manager)
+                            </p>
+                            <p class="process-desc">
+                              Terminates HTTP(S), handles network I/O and TLS,
+                              and forwards requests; never executes application
+                              logic.
+                            </p>
+                            <ul class="process-details">
+                              <li>
+                                <b>Ports:</b> 80XX (8001), 443XX (44301) for
+                                HTTPS
+                              </li>
+                              <li>
+                                <b>Forwards to:</b> Java Dispatcher via local
+                                IPC
+                              </li>
+                            </ul>
+                          </div>
+
+                          <div class="process-box dispatcher">
+                            <p class="process-title">
+                              <span class="badge badge-process">Process</span>
+                              Java Dispatcher
+                            </p>
+                            <p class="process-desc">
+                              Sole router that distributes all requests to JVM
+                              server nodes, enforcing session affinity and load
+                              balancing.
+                            </p>
+                            <ul class="process-details">
+                              <li>
+                                <b>Port:</b> P4 protocol port for internal
+                                communication
+                              </li>
+                              <li>
+                                <b>Connects to:</b> Message Server for cluster
+                                information
+                              </li>
+                            </ul>
+                          </div>
+
+                          <div class="jvm-node-group">
+                            <div class="jvm-node-group-header">
+                              <p class="jvm-node-group-title">
+                                Java Server Nodes (Cluster Members)
+                              </p>
+                              <p class="jvm-node-group-note">
+                                Stateless execution; state stored in DB or
+                                replicated.
+                              </p>
+                            </div>
+
+                            <div class="process-box jvm">
+                              <p class="process-title">
+                                <span class="badge badge-process"
+                                  >JVM Process</span
+                                >
+                                Java Server Node 0 (server0)
+                              </p>
+                              <p class="process-desc">
+                                JVM process running the SAP Java Engine and
+                                application logic.
+                              </p>
+                              <ul class="process-details">
+                                <li>
+                                  <b>Started by:</b> jstart (Java launcher)
+                                </li>
+                                <li>
+                                  <b>JVM Heap:</b> -Xmx4096M (configured in
+                                  instance profile)
+                                </li>
+                                <li>
+                                  <b>P4 Port:</b> 5XX04 (P4 protocol for Java
+                                  Dispatcher communication)
+                                </li>
+                              </ul>
+
+                              <div class="jvm-internals">
+                                <p
+                                  style="
+                                    font-size: 11px;
+                                    font-weight: 700;
+                                    margin: 0 0 8px;
+                                    color: var(--ink);
+                                  "
+                                >
+                                  Inside JVM Process Memory:
+                                </p>
+
+                                <div class="jvm-section">
+                                  <p class="jvm-section-title">
+                                    🔹 Java EE / Jakarta EE Runtime
+                                  </p>
+                                  <ul class="jvm-items">
+                                    <li>
+                                      Servlet Container - handles HTTP requests
+                                      after dispatching
+                                    </li>
+                                    <li>
+                                      EJB Container - business logic components
+                                    </li>
+                                    <li>
+                                      Web Services Runtime - SOAP/REST endpoints
+                                    </li>
+                                    <li>
+                                      JPA / Persistence - ORM for database
+                                      access
+                                    </li>
+                                    <li>
+                                      JMS Provider - asynchronous messaging
+                                    </li>
+                                  </ul>
+                                </div>
+
+                                <div class="jvm-section">
+                                  <p class="jvm-section-title">
+                                    🔹 SAP Java Engine Services
+                                  </p>
+                                  <ul class="jvm-items">
+                                    <li>
+                                      Service Framework - lifecycle management
+                                      of SAP services
+                                    </li>
+                                    <li>
+                                      Deploy Service - handles SCA/SDA
+                                      deployment
+                                    </li>
+                                    <li>
+                                      Cluster Service - communicates with
+                                      Message Server
+                                    </li>
+                                    <li>
+                                      Locking Service - interacts with Enqueue
+                                      Server
+                                    </li>
+                                    <li>
+                                      Configuration Service - reads/writes
+                                      config to DB
+                                    </li>
+                                    <li>
+                                      Log & Trace Service - application logging
+                                    </li>
+                                  </ul>
+                                </div>
+
+                                <div class="jvm-section">
+                                  <p class="jvm-section-title">
+                                    🔹 Deployed Applications
+                                  </p>
+                                  <ul class="jvm-items">
+                                    <li>Web Dynpro Runtime - UI framework</li>
+                                    <li>
+                                      SAP NetWeaver Portal - portal server
+                                      runtime
+                                    </li>
+                                    <li>
+                                      Custom Java Applications - business apps
+                                    </li>
+                                    <li>
+                                      SAP JCo - RFC connector for ABAP systems
+                                    </li>
+                                    <li>
+                                      JDBC Drivers - database connectivity
+                                    </li>
+                                  </ul>
+                                </div>
+
+                                <div class="jvm-section">
+                                  <p class="jvm-section-title">
+                                    🔹 Thread Pools & Resources
+                                  </p>
+                                  <ul class="jvm-items">
+                                    <li>
+                                      HTTP Worker Threads - process servlet
+                                      requests
+                                    </li>
+                                    <li>EJB Thread Pool - handle EJB calls</li>
+                                    <li>
+                                      Connection Pools - JDBC, JCo, JMS
+                                      connections
+                                    </li>
+                                    <li>
+                                      Session Manager - HTTP session cache
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="process-box jvm">
+                              <p class="process-title">
+                                <span class="badge badge-process"
+                                  >JVM Process</span
+                                >
+                                Java Server Node 1 (server1)
+                              </p>
+                              <p class="process-desc">
+                                Additional JVM process for horizontal scaling of
+                                execution capacity.
+                              </p>
+                              <ul class="process-details">
+                                <li>
+                                  <b>JVM Heap:</b> -Xmx4096M (separate memory
+                                  space)
+                                </li>
+                                <li><b>P4 Port:</b> 5XX05</li>
+                              </ul>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -538,7 +555,10 @@
                         <div class="instance-header">
                           <span style="font-size: 14px">☕</span>
                           <h5 class="instance-title">SAP Instance: JC02</h5>
-                          <span class="badge badge-sap">Java App Instance</span>
+                          <span class="badge badge-sap"
+                            >SAP Java Engine (Java EE compatible runtime)</span
+                          >
+                          <span class="badge-role">AAS</span>
                           <span class="instance-id"
                             >SID: J2E, Instance#: 02</span
                           >
@@ -550,7 +570,8 @@
                             ICM
                           </p>
                           <p class="process-desc">
-                            Another ICM instance (load balanced with app-01)
+                            Terminates HTTP(S) and forwards requests to the
+                            local Java Dispatcher; no application logic.
                           </p>
                           <ul class="process-details">
                             <li><b>Ports:</b> 80XX (8002), 443XX (44302)</li>
@@ -564,10 +585,11 @@
                         <div class="process-box dispatcher">
                           <p class="process-title">
                             <span class="badge badge-process">Process</span>
-                            Dispatcher
+                            Java Dispatcher
                           </p>
                           <p class="process-desc">
-                            Routes to local nodes (server0, server1 on this VM)
+                            Routes all requests from ICM to local JVM server
+                            nodes (execution plane only).
                           </p>
                         </div>
 
@@ -587,7 +609,8 @@
                             Java Server Node 0 (server0)
                           </p>
                           <p class="process-desc">
-                            Same JVM structure as app-01, different P4 port
+                            JVM process running SAP Java Engine and applications
+                            for this AAS.
                           </p>
                           <ul class="process-details">
                             <li><b>All nodes connect to same database</b></li>
@@ -670,7 +693,8 @@
                             hdbindexserver
                           </p>
                           <p class="process-desc">
-                            Main HANA database engine process
+                            Main HANA database engine process serving SQL from
+                            all JVM nodes.
                           </p>
                           <ul class="process-details">
                             <li><b>Port:</b> 3XX13 (30013 for instance 00)</li>
@@ -684,6 +708,31 @@
                             <li>
                               <b>Tables:</b> BC_*, deployment units, cluster
                               state, etc.
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div
+                          class="process-box"
+                          style="
+                            border-color: rgba(251, 146, 60, 0.6);
+                            background: rgba(15, 23, 48, 0.9);
+                          "
+                        >
+                          <p class="process-title">Database Usage Breakdown</p>
+                          <ul class="process-details">
+                            <li>
+                              <b>Configuration & Cluster State:</b> instance
+                              profiles, Java cluster membership, locks metadata.
+                            </li>
+                            <li>
+                              <b>Deployment Metadata (SCA/SDA):</b> deployed
+                              software components, versions, and deployment
+                              descriptors.
+                            </li>
+                            <li>
+                              <b>Application Data:</b> business application
+                              tables accessed via JPA/JDBC from JVM nodes.
                             </li>
                           </ul>
                         </div>

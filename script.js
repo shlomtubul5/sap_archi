@@ -130,6 +130,12 @@ function addJavaAppServer() {
     instanceId.textContent = `SID: J2E, Instance#: 0${index}`;
   }
 
+  // Ensure role badge is set to AAS for dynamically added servers
+  const roleBadge = newVm.querySelector(".badge-role");
+  if (roleBadge) {
+    roleBadge.textContent = "AAS";
+  }
+
   // Re-attach click handlers to elements inside the cloned VM
   const clickableElements = newVm.querySelectorAll(
     ".box, .vm-container, .os-layer, .sap-instance, .process-box"
@@ -339,10 +345,18 @@ function extractComponentInfo(element) {
 
     if (info.title.includes("ASCS")) {
       info.function =
-        "Central Services instance providing Message Server and Enqueue Server for cluster coordination.";
-    } else if (info.title.includes("Java") || info.title.includes("JC")) {
-      info.function =
-        "Java application server instance running SAP NetWeaver AS Java with ICM, Dispatcher, and JVM nodes.";
+        "Central Services (ASCS) instance providing Message Server and Enqueue Server as the control plane for the Java cluster.";
+    } else if (info.title.includes("JC")) {
+      // Distinguish PAS vs AAS by role badge text if available
+      const roleBadge = element.querySelector(".badge-role");
+      const role = roleBadge ? roleBadge.textContent.trim() : "";
+      if (role === "PAS") {
+        info.function =
+          "Primary Application Server (PAS) Java instance providing the initial Java Dispatcher and Java server nodes in the cluster.";
+      } else {
+        info.function =
+          "Additional Application Server (AAS) Java instance providing extra Java Dispatchers and Java server nodes for scale-out.";
+      }
     } else if (info.title.includes("HANA")) {
       info.function =
         "SAP HANA in-memory database providing data persistence and high-performance analytics.";
