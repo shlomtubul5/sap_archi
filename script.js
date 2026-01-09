@@ -1,4 +1,4 @@
-let currentZoom = 1;
+let currentZoom = 1.3;
 let canvas, zoomLevel, shell;
 let javaAppServerCount = 0;
 
@@ -6,6 +6,9 @@ function initializeZoom() {
   canvas = document.getElementById("canvas");
   zoomLevel = document.getElementById("zoomLevel");
   shell = document.getElementById("diagramShell");
+
+  // Apply initial zoom
+  updateZoom();
 
   // Initialize VM width slider
   const vmWidthSlider = document.getElementById("vmWidthSlider");
@@ -16,7 +19,7 @@ function initializeZoom() {
     const baseWidthVar = rootStyles.getPropertyValue("--vm-base-width").trim();
     const initialWidth = baseWidthVar
       ? parseInt(baseWidthVar, 10)
-      : parseInt(vmWidthSlider.value, 10) || 230;
+      : parseInt(vmWidthSlider.value, 10) || 360;
 
     vmWidthSlider.value = initialWidth;
     vmWidthValue.textContent = `${initialWidth}px`;
@@ -105,10 +108,11 @@ function addJavaAppServer() {
   const javaLevelContent = getJavaAppServerLevelContent();
   if (!javaLevelContent) return;
 
+  // Use the PAS VM as the template; all dynamically added VMs represent AAS
   const templateVm = javaLevelContent.querySelector(".vm-container");
   if (!templateVm) return;
 
-  // Clone the first Java app server VM
+  // Clone the PAS VM as a basis for an AAS VM
   const newVm = templateVm.cloneNode(true);
 
   javaAppServerCount += 1;
@@ -123,7 +127,7 @@ function addJavaAppServer() {
   // Update instance title and ID
   const instanceTitle = newVm.querySelector(".instance-title");
   if (instanceTitle) {
-    instanceTitle.textContent = `SAP Instance: JC0${index}`;
+    instanceTitle.textContent = "SAP Java Additional Application Server (AAS)";
   }
   const instanceId = newVm.querySelector(".instance-id");
   if (instanceId) {

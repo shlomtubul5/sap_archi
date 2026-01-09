@@ -19,7 +19,7 @@
   --c-vm: #8b5cf6;
 
   /* Base VM width used for layout; adjustable via UI */
-  --vm-base-width: 230px;
+  --vm-base-width: 360px;
 }
 
 * {

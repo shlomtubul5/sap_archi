@@ -67,6 +67,12 @@
           <div class="pill">
             <span class="dot" style="background: #22c55e"></span>Network/Edge
           </div>
+          <div class="pill">
+            <span class="dot" style="background: #fbbf24"></span>Control Plane
+          </div>
+          <div class="pill">
+            <span class="dot" style="background: #10b981"></span>Execution Plane
+          </div>
         </div>
       </section>
 
@@ -212,26 +218,6 @@
                               </li>
                             </ul>
                           </div>
-
-                          <div
-                            class="process-box"
-                            style="border-color: rgba(96, 165, 250, 0.5)"
-                          >
-                            <p class="process-title">
-                              <span class="badge badge-process">Process</span>
-                              sapstartsrv
-                            </p>
-                            <p class="process-desc">
-                              Local instance control daemon that can start,
-                              stop, and monitor ASCS processes.
-                            </p>
-                            <ul class="process-details">
-                              <li><b>Port:</b> 5XX00 (SOAP/HTTP)</li>
-                              <li>
-                                <b>Started by:</b> OS init system (systemd)
-                              </li>
-                            </ul>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -273,7 +259,9 @@
                       <div class="sap-instance">
                         <div class="instance-header">
                           <span style="font-size: 14px">☕</span>
-                          <h5 class="instance-title">SAP Instance: JC01</h5>
+                          <h5 class="instance-title">
+                            SAP Java Primary Application Server (PAS)
+                          </h5>
                           <span class="badge badge-sap"
                             >SAP Java Engine (Java EE compatible runtime)</span
                           >
@@ -315,18 +303,18 @@
                               ICM (Internet Communication Manager)
                             </p>
                             <p class="process-desc">
-                              Terminates HTTP(S), handles network I/O and TLS,
-                              and forwards requests; never executes application
-                              logic.
+                              Receives incoming HTTP(S) requests and distributes
+                              them to Java server processes using a round-robin
+                              algorithm; does not execute application logic.
                             </p>
                             <ul class="process-details">
                               <li>
-                                <b>Ports:</b> 80XX (8001), 443XX (44301) for
-                                HTTPS
+                                <b>Ports:</b> 80XX (8001) for HTTP, 443XX
+                                (44301) for HTTPS
                               </li>
                               <li>
-                                <b>Forwards to:</b> Java Dispatcher via local
-                                IPC
+                                <b>Distributes to:</b> Java server processes of
+                                the instance
                               </li>
                             </ul>
                           </div>
@@ -337,14 +325,14 @@
                               Java Dispatcher
                             </p>
                             <p class="process-desc">
-                              Sole router that distributes all requests to JVM
-                              server nodes, enforcing session affinity and load
-                              balancing.
+                              Organizes the Java server processes of this
+                              instance and participates in the Java cluster
+                              together with Central Services and the database.
                             </p>
                             <ul class="process-details">
                               <li>
-                                <b>Port:</b> P4 protocol port for internal
-                                communication
+                                <b>Port:</b> 5XX04 (P4 protocol for internal
+                                Java instance communication)
                               </li>
                               <li>
                                 <b>Connects to:</b> Message Server for cluster
@@ -359,8 +347,8 @@
                                 Java Server Nodes (Cluster Members)
                               </p>
                               <p class="jvm-node-group-note">
-                                Stateless execution; state stored in DB or
-                                replicated.
+                                Execute Java EE applications; multi-threaded and
+                                part of the Java cluster.
                               </p>
                             </div>
 
@@ -521,113 +509,6 @@
                               </ul>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Java App Server 2 VM -->
-                  <div class="vm-container">
-                    <div class="vm-header">
-                      <span style="font-size: 18px">💻</span>
-                      <h3 class="vm-title">VM/Host: sap-java-app-02</h3>
-                      <span class="badge badge-vm">Virtual Machine</span>
-                      <span class="vm-specs">8 vCPU | 32GB RAM | RHEL 8</span>
-                    </div>
-
-                    <div class="os-layer">
-                      <div class="os-header">
-                        <span style="font-size: 14px">🐧</span>
-                        <h4 class="os-title">Operating System: RHEL 8.6</h4>
-                        <span class="badge badge-os">Linux</span>
-                      </div>
-                      <p
-                        style="
-                          font-size: 11px;
-                          color: var(--muted);
-                          margin: 0 0 12px;
-                        "
-                      >
-                        Same OS setup as app-01, separate VM for scale-out
-                      </p>
-
-                      <div class="sap-instance">
-                        <div class="instance-header">
-                          <span style="font-size: 14px">☕</span>
-                          <h5 class="instance-title">SAP Instance: JC02</h5>
-                          <span class="badge badge-sap"
-                            >SAP Java Engine (Java EE compatible runtime)</span
-                          >
-                          <span class="badge-role">AAS</span>
-                          <span class="instance-id"
-                            >SID: J2E, Instance#: 02</span
-                          >
-                        </div>
-
-                        <div class="process-box icm">
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            ICM
-                          </p>
-                          <p class="process-desc">
-                            Terminates HTTP(S) and forwards requests to the
-                            local Java Dispatcher; no application logic.
-                          </p>
-                          <ul class="process-details">
-                            <li><b>Ports:</b> 80XX (8002), 443XX (44302)</li>
-                            <li>
-                              <b>Load Balancer:</b> Distributes traffic between
-                              app-01 and app-02 ICMs
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div class="process-box dispatcher">
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            Java Dispatcher
-                          </p>
-                          <p class="process-desc">
-                            Routes all requests from ICM to local JVM server
-                            nodes (execution plane only).
-                          </p>
-                        </div>
-
-                        <div
-                          class="process-box"
-                          style="border-color: rgba(96, 165, 250, 0.5)"
-                        >
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            sapstartsrv
-                          </p>
-                        </div>
-
-                        <div class="process-box jvm">
-                          <p class="process-title">
-                            <span class="badge badge-process">JVM Process</span>
-                            Java Server Node 0 (server0)
-                          </p>
-                          <p class="process-desc">
-                            JVM process running SAP Java Engine and applications
-                            for this AAS.
-                          </p>
-                          <ul class="process-details">
-                            <li><b>All nodes connect to same database</b></li>
-                            <li>
-                              <b>All nodes register with Message Server</b>
-                            </li>
-                            <li>
-                              <b>All nodes use Enqueue Server for locks</b>
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div class="process-box jvm">
-                          <p class="process-title">
-                            <span class="badge badge-process">JVM Process</span>
-                            Java Server Node 1 (server1)
-                          </p>
                         </div>
                       </div>
                     </div>
