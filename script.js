@@ -6,6 +6,30 @@ function initializeZoom() {
   zoomLevel = document.getElementById("zoomLevel");
   shell = document.getElementById("diagramShell");
 
+  // Initialize VM width slider
+  const vmWidthSlider = document.getElementById("vmWidthSlider");
+  const vmWidthValue = document.getElementById("vmWidthValue");
+  if (vmWidthSlider && vmWidthValue) {
+    // Set initial slider value from CSS variable or default
+    const rootStyles = getComputedStyle(document.documentElement);
+    const baseWidthVar = rootStyles.getPropertyValue("--vm-base-width").trim();
+    const initialWidth = baseWidthVar
+      ? parseInt(baseWidthVar, 10)
+      : parseInt(vmWidthSlider.value, 10) || 230;
+
+    vmWidthSlider.value = initialWidth;
+    vmWidthValue.textContent = `${initialWidth}px`;
+
+    vmWidthSlider.addEventListener("input", () => {
+      const value = parseInt(vmWidthSlider.value, 10);
+      document.documentElement.style.setProperty(
+        "--vm-base-width",
+        `${value}px`
+      );
+      vmWidthValue.textContent = `${value}px`;
+    });
+  }
+
   if (shell) {
     shell.addEventListener("wheel", (e) => {
       if (e.ctrlKey || e.metaKey) {

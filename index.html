@@ -25,6 +25,18 @@
           <button class="zoom-btn" onclick="resetZoom()">Reset</button>
         </div>
 
+        <div class="vm-width-controls">
+          <label for="vmWidthSlider">VM Width</label>
+          <input
+            type="range"
+            id="vmWidthSlider"
+            min="180"
+            max="360"
+            step="10"
+          />
+          <span id="vmWidthValue"></span>
+        </div>
+
         <div class="legend">
           <div class="pill">
             <span class="dot" style="background: #64748b"></span>Physical/Cloud

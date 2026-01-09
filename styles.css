@@ -17,6 +17,9 @@
   --c-infra: #64748b;
   --c-os: #0ea5e9;
   --c-vm: #8b5cf6;
+
+  /* Base VM width used for layout; adjustable via UI */
+  --vm-base-width: 230px;
 }
 
 * {
@@ -95,6 +98,23 @@ header p {
   top: 76px;
   z-index: 90;
   backdrop-filter: blur(10px);
+}
+
+.vm-width-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.vm-width-controls label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.vm-width-controls input[type="range"] {
+  accent-color: #60a5fa;
 }
 
 .zoom-controls {
@@ -281,8 +301,8 @@ header p {
   padding: 8px;
   margin-bottom: 8px;
   max-width: 100%;
-  /* Let flexbox control width inside vm-level-content */
-  flex: 1 1 230px;
+  /* Let flexbox control width inside vm-level-content, based on adjustable CSS variable */
+  flex: 0 0 var(--vm-base-width);
 }
 
 .vm-header {
