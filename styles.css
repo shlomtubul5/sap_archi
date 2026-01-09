@@ -196,21 +196,21 @@ header p {
 
 /* VM levels (rows of VMs by category) */
 .vm-level {
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .vm-level-title {
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
-  margin: 0 0 6px 2px;
+  margin: 0 0 4px 2px;
 }
 
 .vm-level-content {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
 }
 
 .layer-physical {
@@ -278,19 +278,19 @@ header p {
   border-radius: 12px;
   border: 2px dashed rgba(139, 92, 246, 0.4);
   background: rgba(139, 92, 246, 0.05);
-  padding: 10px;
-  margin-bottom: 12px;
+  padding: 8px;
+  margin-bottom: 8px;
   max-width: 100%;
   /* Let flexbox control width inside vm-level-content */
-  flex: 1 1 260px;
+  flex: 1 1 230px;
 }
 
 .vm-header {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 8px;
-  padding: 6px 8px;
+  margin-bottom: 6px;
+  padding: 4px 6px;
   background: rgba(139, 92, 246, 0.12);
   border-radius: 8px;
   border: 1px solid rgba(139, 92, 246, 0.3);
@@ -298,14 +298,14 @@ header p {
 }
 
 .vm-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   margin: 0;
   color: var(--ink);
 }
 
 .vm-specs {
-  font-size: 9px;
+  font-size: 8px;
   color: var(--muted);
   margin-left: auto;
   white-space: nowrap;
@@ -316,8 +316,8 @@ header p {
   border-radius: 10px;
   border: 2px solid rgba(14, 165, 233, 0.4);
   background: rgba(14, 165, 233, 0.05);
-  padding: 8px;
-  margin-bottom: 8px;
+  padding: 6px;
+  margin-bottom: 6px;
   max-width: 100%;
   width: 100%;
 }
@@ -326,15 +326,15 @@ header p {
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-bottom: 6px;
-  padding: 5px 6px;
+  margin-bottom: 4px;
+  padding: 4px 5px;
   background: rgba(14, 165, 233, 0.12);
   border-radius: 6px;
   flex-wrap: wrap;
 }
 
 .os-title {
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 600;
   margin: 0;
 }
@@ -344,8 +344,8 @@ header p {
   border-radius: 10px;
   border: 2px solid rgba(96, 165, 250, 0.5);
   background: rgba(96, 165, 250, 0.08);
-  padding: 8px;
-  margin-bottom: 8px;
+  padding: 6px;
+  margin-bottom: 6px;
   max-width: 100%;
   width: 100%;
 }
@@ -354,8 +354,8 @@ header p {
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-bottom: 6px;
-  padding: 5px 6px;
+  margin-bottom: 4px;
+  padding: 4px 5px;
   background: rgba(96, 165, 250, 0.15);
   border-radius: 6px;
   border: 1px solid rgba(96, 165, 250, 0.3);
@@ -363,13 +363,13 @@ header p {
 }
 
 .instance-title {
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 700;
   margin: 0;
 }
 
 .instance-id {
-  font-size: 9px;
+  font-size: 8px;
   color: var(--muted);
   margin-left: 6px;
   white-space: nowrap;
@@ -379,8 +379,8 @@ header p {
 .process-box {
   border-radius: 8px;
   border: 1.5px solid;
-  padding: 8px;
-  margin-bottom: 6px;
+  padding: 6px;
+  margin-bottom: 4px;
   background: rgba(15, 23, 48, 0.85);
   max-width: 100%;
   width: 100%;
@@ -432,7 +432,7 @@ header p {
 }
 
 .process-title {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   margin: 0 0 4px;
   display: flex;
@@ -441,14 +441,14 @@ header p {
 }
 
 .process-desc {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--muted);
   margin: 0 0 6px;
   line-height: 1.4;
 }
 
 .process-details {
-  font-size: 9px;
+  font-size: 8px;
   color: var(--muted);
   padding-left: 12px;
   margin: 4px 0 0;
