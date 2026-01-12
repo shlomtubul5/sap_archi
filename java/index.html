@@ -4,242 +4,168 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SAP NetWeaver AS Java – Infrastructure & Software Hierarchy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <header>
-      <h1>SAP NetWeaver AS Java – Infrastructure & Software Hierarchy</h1>
-      <p>
-        Complete view showing the infrastructure stack: Physical/Cloud →
-        VM/Container → OS → SAP Instance → Processes → JVM Runtime. Each layer
-        clearly shows what runs on what.
-      </p>
+  <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+      <div class="max-w-[98%] mx-auto flex flex-col gap-1">
+        <h1 class="text-xl font-bold flex items-center gap-2">
+          <span class="text-2xl">☕</span>
+          SAP NetWeaver AS Java <span class="text-slate-400 font-normal text-sm ml-2">Infrastructure & Software Hierarchy</span>
+        </h1>
+        <p class="text-xs text-slate-400 max-w-[90%]">
+          Physical/Cloud → VM/Container → OS → SAP Instance → Processes → JVM Runtime
+        </p>
+      </div>
     </header>
 
-    <main class="wrap">
-      <section class="controls">
-        <div class="view-switcher">
-          <button class="view-btn active" id="topologyViewBtn" onclick="switchView('topology')">
+    <main class="wrap px-4 py-6 flex-grow flex flex-col gap-4 h-[calc(100vh-80px)]">
+      
+      <!-- Controls Toolbar -->
+      <section class="controls flex flex-wrap items-center gap-4 bg-white p-3 rounded-xl shadow border border-slate-200 sticky top-[72px] z-40">
+        
+        <!-- View Switcher -->
+        <div class="bg-slate-100 p-1 rounded-lg flex space-x-1">
+          <button class="view-btn px-3 py-1.5 rounded-md text-sm font-semibold text-slate-600 hover:bg-white hover:shadow-sm transition-all active bg-white text-blue-600 shadow-sm ring-1 ring-slate-200" id="topologyViewBtn" onclick="switchView('topology')">
             Topology View
           </button>
-          <button class="view-btn" id="flowViewBtn" onclick="switchView('flow')">
+          <button class="view-btn px-3 py-1.5 rounded-md text-sm font-semibold text-slate-600 hover:bg-white hover:shadow-sm transition-all" id="flowViewBtn" onclick="switchView('flow')">
             Flow View
           </button>
         </div>
 
-        <div class="zoom-controls" id="topologyControls">
-          <button class="zoom-btn" onclick="zoomOut()">−</button>
-          <div class="zoom-level" id="zoomLevel">100%</div>
-          <button class="zoom-btn" onclick="zoomIn()">+</button>
-          <button class="zoom-btn" onclick="resetZoom()">Reset</button>
+        <div class="h-6 w-px bg-slate-300 mx-2"></div>
+
+        <!-- Topology Controls -->
+        <div class="zoom-controls flex items-center gap-2" id="topologyControls">
+          <button class="zoom-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-300 rounded text-slate-600 hover:bg-slate-50 font-bold" onclick="zoomOut()">−</button>
+          <div class="zoom-level text-xs font-mono text-slate-500 w-12 text-center" id="zoomLevel">100%</div>
+          <button class="zoom-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-300 rounded text-slate-600 hover:bg-slate-50 font-bold" onclick="zoomIn()">+</button>
+          <button class="zoom-btn px-3 py-1 bg-white border border-slate-300 rounded text-xs font-semibold text-slate-600 hover:bg-slate-50" onclick="resetZoom()">Reset</button>
         </div>
 
-        <div class="vm-width-controls">
-          <label for="vmWidthSlider">VM Width</label>
-          <input
-            type="range"
-            id="vmWidthSlider"
-            min="180"
-            max="360"
-            step="10"
-          />
-          <span id="vmWidthValue"></span>
+        <div class="vm-width-controls flex items-center gap-2 text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded border border-slate-200">
+          <label for="vmWidthSlider" class="uppercase font-bold tracking-wider">VM Width</label>
+          <input type="range" id="vmWidthSlider" min="180" max="420" step="10" class="accent-blue-500 h-1 bg-slate-300 rounded appearance-none" />
+          <span id="vmWidthValue" class="font-mono">360px</span>
         </div>
 
-        <div class="scaling-controls" id="topologyControls2">
-          <button class="zoom-btn" onclick="addJavaAppServer()">
+        <!-- Scaling Controls -->
+        <div class="scaling-controls flex gap-2" id="topologyControls2">
+          <button class="zoom-btn px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded text-xs font-bold hover:bg-blue-100 transition-colors" onclick="addJavaAppServer()">
             + Java App Server
           </button>
-          <button class="zoom-btn" onclick="removeJavaAppServer()">
-            − Java App Server
+          <button class="zoom-btn px-3 py-1 bg-red-50 border border-red-200 text-red-700 rounded text-xs font-bold hover:bg-red-100 transition-colors" onclick="removeJavaAppServer()">
+            − App Server
           </button>
         </div>
 
-        <div class="flow-controls" id="flowControls" style="display: none;">
-          <select id="flowSelector" class="flow-select">
+        <!-- Flow Controls -->
+        <div class="flow-controls flex gap-2 items-center" id="flowControls" style="display: none;">
+          <select id="flowSelector" class="flow-select text-sm p-1.5 border border-slate-300 rounded bg-white text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
             <option value="http">Flow 1: User HTTP Request</option>
             <option value="cluster">Flow 2: Java Cluster Coordination</option>
             <option value="startup">Flow 3: System Startup</option>
           </select>
-          <button class="zoom-btn" id="playPauseBtn" onclick="togglePlayPause()">▶ Play</button>
-          <button class="zoom-btn" onclick="stepBackward()">◀◀ Step Back</button>
-          <button class="zoom-btn" onclick="stepForward()">Step Forward ▶▶</button>
-          <button class="zoom-btn" onclick="restartFlow()">↻ Restart</button>
+          <button class="zoom-btn px-3 py-1.5 bg-green-50 text-green-700 border border-green-200 rounded text-xs font-bold hover:bg-green-100" id="playPauseBtn" onclick="togglePlayPause()">▶ Play</button>
+          <button class="zoom-btn px-2 py-1.5 bg-white border border-slate-300 rounded text-xs hover:bg-slate-50" onclick="stepBackward()">◀◀</button>
+          <button class="zoom-btn px-2 py-1.5 bg-white border border-slate-300 rounded text-xs hover:bg-slate-50" onclick="stepForward()">▶▶</button>
+          <button class="zoom-btn px-3 py-1.5 bg-slate-50 border border-slate-200 rounded text-xs font-semibold text-slate-600 hover:bg-slate-100" onclick="restartFlow()">↻ Restart</button>
         </div>
 
-        <div class="legend">
-          <div class="pill">
-            <span class="dot" style="background: #64748b"></span>Physical/Cloud
-            Infra
-          </div>
-          <div class="pill">
-            <span class="dot" style="background: #8b5cf6"></span>VM/Host
-          </div>
-          <div class="pill">
-            <span class="dot" style="background: #0ea5e9"></span>Operating
-            System
-          </div>
-          <div class="pill">
-            <span class="dot" style="background: #60a5fa"></span>SAP Instance
-          </div>
-          <div class="pill">
-            <span class="dot" style="background: #34d399"></span>Process/JVM
-          </div>
-          <div class="pill">
-            <span class="dot" style="background: #22c55e"></span>Network/Edge
-          </div>
-          <div class="pill">
-            <span class="dot" style="background: #fbbf24"></span>Control Plane
-          </div>
-          <div class="pill">
-            <span class="dot" style="background: #10b981"></span>Execution Plane
-          </div>
+        <div class="flex-grow"></div>
+
+        <!-- Legend -->
+        <div class="legend flex gap-3 text-[10px] text-slate-500">
+           <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>Infra</div>
+           <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-600 shadow-sm border border-white"></span>VM</div>
+           <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-200 border border-sky-400"></span>OS</div>
+           <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-200 border border-orange-400"></span>SAP Instance</div>
+           <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300"></span>Process</div>
         </div>
       </section>
 
       <!-- Topology View -->
-      <section class="diagram-shell" id="topologyView">
-        <div class="canvas-wrapper">
-          <div class="canvas" id="canvas">
+      <section class="diagram-shell flex-grow rounded-xl bg-slate-100 border border-slate-300 shadow-inner overflow-auto relative" id="topologyView" id="diagramShell">
+        <div class="canvas-wrapper p-10 min-w-full min-h-full inline-block">
+          <div class="canvas relative w-[1200px] max-w-full mx-auto" id="canvas">
+            
             <!-- EXTERNAL / NETWORK LAYER -->
-            <div class="external-layer">
-              <div class="layer-header">
-                <div
-                  class="layer-icon"
-                  style="background: rgba(34, 197, 94, 0.2)"
-                >
-                  🌐
+            <div class="external-layer bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 shadow-sm">
+              <div class="layer-header flex items-center gap-3 mb-4 border-b border-green-100 pb-2">
+                <div class="layer-icon w-8 h-8 flex items-center justify-center bg-green-100 text-green-600 rounded-lg text-lg">🌐</div>
+                <div>
+                  <h2 class="layer-title text-base font-bold text-green-900">External Network & Edge Layer</h2>
+                  <p class="layer-desc text-xs text-green-600">Load balancers, reverse proxies, firewalls</p>
                 </div>
-                <h2 class="layer-title">External Network & Edge Layer</h2>
-                <p class="layer-desc">
-                  Load balancers, reverse proxies, firewalls (no VMs - typically
-                  cloud services or dedicated appliances)
-                </p>
               </div>
-              <div class="grid grid-3">
-                <div class="box">
-                  <p class="box-title">DNS / Load Balancer</p>
-                  <p class="box-desc">
-                    Virtual IP, health checks, traffic distribution
-                  </p>
+              <div class="grid grid-cols-3 gap-4">
+                <div class="box bg-white border border-green-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <p class="box-title text-xs font-bold text-green-800 mb-1">DNS / Load Balancer</p>
+                  <p class="box-desc text-[10px] text-slate-500 leading-tight">Virtual IP, health checks, traffic distribution</p>
                 </div>
-                <div class="box">
-                  <p class="box-title">Reverse Proxy / WAF</p>
-                  <p class="box-desc">
-                    TLS termination, L7 routing, security filtering
-                  </p>
+                <div class="box bg-white border border-green-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <p class="box-title text-xs font-bold text-green-800 mb-1">Reverse Proxy / WAF</p>
+                  <p class="box-desc text-[10px] text-slate-500 leading-tight">TLS termination, L7 routing, security</p>
                 </div>
-                <div class="box">
-                  <p class="box-title">Firewall / Security Groups</p>
-                  <p class="box-desc">Network policies, port filtering, VPN</p>
+                <div class="box bg-white border border-green-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <p class="box-title text-xs font-bold text-green-800 mb-1">Firewall / Security Groups</p>
+                  <p class="box-desc text-[10px] text-slate-500 leading-tight">Network policies, port filtering</p>
                 </div>
               </div>
             </div>
 
-            <div class="flow-arrow">↓</div>
-            <div class="connection-note">
-              Traffic flows to SAP infrastructure
-            </div>
 
-            <!-- PHYSICAL / CLOUD INFRASTRUCTURE -->
-            <div class="infra-layer layer-physical">
-              <div class="layer-header">
-                <div
-                  class="layer-icon"
-                  style="background: rgba(100, 116, 139, 0.2)"
-                >
-                  🏗️
-                </div>
-                <h2 class="layer-title">
-                  Physical / Cloud Infrastructure Layer
-                </h2>
-                <p class="layer-desc">
-                  Bare metal servers, hypervisors, or cloud provider
-                  infrastructure (AWS/Azure/GCP/On-Prem)
-                </p>
-              </div>
+
+            <!-- PHYSICAL / CLOUD INFRASTRUCTURE (Wrapper Removed) -->
+            <div class="fluid-infra mt-8">
 
               <!-- Level 1: Central Services -->
-              <div class="vm-level">
-                <div class="vm-level-title">Central Services</div>
-                <div class="vm-level-content">
+              <div class="vm-level mb-6">
+                <div class="vm-level-title text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Central Services</div>
+                <div class="vm-level-content flex flex-wrap gap-4">
+                  
                   <!-- ASCS VM -->
-                  <div class="vm-container">
-                    <div class="vm-header">
-                      <span style="font-size: 18px">💻</span>
-                      <h3 class="vm-title">VM/Host: sap-ascs-01</h3>
-                      <span class="badge badge-vm">Virtual Machine</span>
-                      <span class="vm-specs">4 vCPU | 16GB RAM | RHEL 8</span>
+                  <div class="vm-container bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 shadow-sm hover:border-slate-400 hover:shadow-md transition-all cursor-pointer flex-none w-[360px]">
+                    <div class="vm-header flex items-center gap-2 mb-3 bg-white p-2 rounded border border-slate-200 shadow-sm">
+                      <span class="text-lg">💻</span>
+                      <h3 class="vm-title text-xs font-bold text-slate-700">VM/Host: sap-ascs-01</h3>
+                      <span class="badge badge-vm text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded border border-slate-200">Virtual Machine</span>
+                      <span class="vm-specs ml-auto text-[9px] font-mono text-slate-400">4 vCPU | 16GB</span>
                     </div>
 
-                    <div class="os-layer">
-                      <div class="os-header">
-                        <span style="font-size: 14px">🐧</span>
-                        <h4 class="os-title">Operating System: RHEL 8.6</h4>
-                        <span class="badge badge-os">Linux</span>
+                    <div class="os-layer bg-sky-50 border border-sky-200 rounded-lg p-2 mb-3">
+                      <div class="os-header flex items-center gap-2 mb-1">
+                        <span class="text-sm">🐧</span>
+                        <h4 class="os-title text-[11px] font-bold text-sky-700">OS: RHEL 8.6</h4>
+                        <span class="badge badge-os text-[9px] bg-sky-100 text-sky-600 px-2 py-0.5 rounded border border-sky-200">Linux</span>
                       </div>
-                      <p
-                        style="
-                          font-size: 11px;
-                          color: var(--muted);
-                          margin: 0 0 12px;
-                        "
-                      >
-                        Kernel, filesystem (/usr/sap/...), networking, user
-                        management (sidadm, sapadm)
-                      </p>
+                      <p class="text-[10px] text-slate-500 mb-2 leading-tight">Kernel, filesystem, networking, sidadm</p>
 
-                      <div class="sap-instance">
-                        <div class="instance-header">
-                          <span style="font-size: 14px">⚙️</span>
-                          <h5 class="instance-title">SAP Instance: ASCS00</h5>
-                          <span class="badge badge-sap">Central Services</span>
-                          <span class="badge-role">ASCS</span>
-                          <span class="instance-id"
-                            >SID: J2E, Instance#: 00</span
-                          >
+                      <div class="sap-instance bg-blue-50 border border-blue-200 rounded-lg p-2.5 shadow-sm">
+                        <div class="instance-header flex items-center gap-2 mb-2 bg-white/60 p-1.5 rounded border border-blue-100">
+                          <span class="text-sm">⚙️</span>
+                          <h5 class="instance-title text-[11px] font-bold text-blue-900">SAP Instance: ASCS00</h5>
+                          <span class="badge badge-role text-[9px] bg-slate-800 text-white px-1.5 py-0.5 rounded uppercase font-bold tracking-wide">ASCS</span>
+                          <span class="instance-id text-[8px] text-slate-400 ml-auto">Instance# 00</span>
                         </div>
 
-                        <div class="plane-label">Control Plane</div>
-                        <div class="plane-group">
-                          <div class="process-box msg">
-                            <p class="process-title">
-                              <span class="badge badge-process">Process</span>
-                              Message Server (msg_server)
-                            </p>
-                            <p class="process-desc">
-                              Cluster-wide control service that maintains the
-                              server list and load-balancing information; no
-                              user traffic or application logic.
-                            </p>
-                            <ul class="process-details">
-                              <li><b>Port:</b> 36XX (3600 for instance 00)</li>
-                              <li>
-                                <b>Protocol:</b> SAP Message Server protocol
-                              </li>
-                              <li>
-                                <b>Connects to:</b> All Java application server
-                                instances
-                              </li>
-                            </ul>
-                          </div>
+                        <div class="process-box msg bg-white border border-blue-200 rounded p-2 mb-2 shadow-sm hover:translate-y-px transition-transform cursor-pointer">
+                           <p class="process-title text-[10px] font-bold text-blue-800 flex items-center gap-2 mb-1">
+                             <span class="badge badge-process bg-blue-50 text-blue-500 px-1.5 rounded border border-blue-100 text-[8px]">Proc</span>
+                             Message Server (msg_server)
+                           </p>
+                           <p class="process-desc text-[9px] text-slate-500 leading-tight">Control hub for cluster, load balancing info.</p>
+                        </div>
 
-                          <div class="process-box enq">
-                            <p class="process-title">
-                              <span class="badge badge-process">Process</span>
-                              Enqueue Server (enserver)
-                            </p>
-                            <p class="process-desc">
-                              Central lock table for distributed locks; ensures
-                              data consistency across the Java cluster.
-                            </p>
-                            <ul class="process-details">
-                              <li><b>Port:</b> 32XX (3200 for instance 00)</li>
-                              <li>
-                                <b>Lock Table:</b> Stored in shared memory
-                              </li>
-                            </ul>
-                          </div>
+                        <div class="process-box enq bg-white border border-blue-200 rounded p-2 shadow-sm hover:translate-y-px transition-transform cursor-pointer">
+                           <p class="process-title text-[10px] font-bold text-blue-800 flex items-center gap-2 mb-1">
+                             <span class="badge badge-process bg-blue-50 text-blue-500 px-1.5 rounded border border-blue-100 text-[8px]">Proc</span>
+                             Enqueue Server (enserver)
+                           </p>
+                           <p class="process-desc text-[9px] text-slate-500 leading-tight">Distributed lock management.</p>
                         </div>
                       </div>
                     </div>
@@ -248,657 +174,163 @@
               </div>
 
               <!-- Level 2: Java Application Servers -->
-              <div class="vm-level">
-                <div class="vm-level-title">Java Application Servers</div>
-                <div class="vm-level-content">
-                  <!-- Java App Server 1 VM -->
-                  <div class="vm-container">
-                    <div class="vm-header">
-                      <span style="font-size: 18px">💻</span>
-                      <h3 class="vm-title">VM/Host: sap-java-app-01</h3>
-                      <span class="badge badge-vm">Virtual Machine</span>
-                      <span class="vm-specs">8 vCPU | 32GB RAM | RHEL 8</span>
+              <div class="vm-level mb-6">
+                <div class="vm-level-title text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Java Application Servers</div>
+                <div class="vm-level-content flex flex-wrap gap-4">
+                  
+                  <!-- Java PAS VM -->
+                  <div class="vm-container bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 shadow-sm hover:border-slate-400 hover:shadow-md transition-all cursor-pointer flex-none w-[360px]">
+                    <div class="vm-header flex items-center gap-2 mb-3 bg-white p-2 rounded border border-slate-200 shadow-sm">
+                      <span class="text-lg">💻</span>
+                      <h3 class="vm-title text-xs font-bold text-slate-700">VM/Host: sap-java-app-01</h3>
+                      <span class="badge badge-vm text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded border border-slate-200">VM</span>
+                      <span class="vm-specs ml-auto text-[9px] font-mono text-slate-400">8 vCPU | 32GB</span>
                     </div>
 
-                    <div class="os-layer">
-                      <div class="os-header">
-                        <span style="font-size: 14px">🐧</span>
-                        <h4 class="os-title">Operating System: RHEL 8.6</h4>
-                        <span class="badge badge-os">Linux</span>
+                    <div class="os-layer bg-sky-50 border border-sky-200 rounded-lg p-2 mb-3">
+                      <div class="os-header flex items-center gap-2 mb-1">
+                        <span class="text-sm">🐧</span>
+                        <h4 class="os-title text-[11px] font-bold text-sky-700">OS: RHEL 8.6</h4>
                       </div>
-                      <p
-                        style="
-                          font-size: 11px;
-                          color: var(--muted);
-                          margin: 0 0 12px;
-                        "
-                      >
-                        SAP JVM installed at
-                        /usr/sap/J2E/SYS/exe/uc/linuxx86_64, instance
-                        directories, j2eadm user
-                      </p>
+                      <p class="text-[10px] text-slate-500 mb-2 leading-tight">/usr/sap/J2E, j2eadm user</p>
 
-                      <div class="sap-instance">
-                        <div class="instance-header">
-                          <span style="font-size: 14px">☕</span>
-                          <h5 class="instance-title">
-                            SAP Java Primary Application Server (PAS)
-                          </h5>
-                          <span class="badge badge-sap"
-                            >SAP Java Engine (Java EE compatible runtime)</span
-                          >
-                          <span class="badge-role">PAS</span>
-                          <span class="instance-id"
-                            >SID: J2E, Instance#: 01</span
-                          >
+                      <!-- Updated to Orange Theme for Java Instance -->
+                      <div class="sap-instance bg-orange-50 border border-orange-200 rounded-lg p-2.5 shadow-sm">
+                        <div class="instance-header flex items-center gap-2 mb-2 bg-white/60 p-1.5 rounded border border-orange-100">
+                          <span class="text-sm">☕</span>
+                          <h5 class="instance-title text-[11px] font-bold text-orange-900">SAP Java PAS</h5>
+                          <span class="badge badge-role text-[9px] bg-slate-800 text-white px-1.5 py-0.5 rounded uppercase font-bold tracking-wide">PAS</span>
+                          <span class="instance-id text-[8px] text-slate-400 ml-auto">Instance# 01</span>
                         </div>
 
-                        <div class="plane-label">Control Plane</div>
-                        <div class="plane-group">
-                          <div
-                            class="process-box"
-                            style="border-color: rgba(96, 165, 250, 0.5)"
-                          >
-                            <p class="process-title">
-                              <span class="badge badge-process">Process</span>
-                              sapstartsrv
-                            </p>
-                            <p class="process-desc">
-                              Local control service that starts, stops, and
-                              monitors ICM, Java Dispatcher, and JVM server
-                              nodes.
-                            </p>
-                            <ul class="process-details">
-                              <li>
-                                <b>Starts:</b> ICM, Java Dispatcher, JVM nodes
-                                via jstart
-                              </li>
-                            </ul>
-                          </div>
+                        <!-- sapstartsrv -->
+                        <div class="process-box bg-white border border-slate-200 rounded p-2 mb-2 shadow-sm">
+                           <p class="process-title text-[10px] font-bold text-slate-700 mb-1">
+                             <span class="badge badge-process bg-slate-100 text-slate-500 px-1 text-[8px] rounded border">Daemon</span>
+                             sapstartsrv
+                           </p>
                         </div>
 
-                        <div class="plane-label">Execution Plane</div>
-                        <div class="plane-group">
-                          <div class="process-box icm">
-                            <p class="process-title">
-                              <span class="badge badge-process">Process</span>
-                              ICM (Internet Communication Manager)
-                            </p>
-                            <p class="process-desc">
-                              Receives incoming HTTP(S) requests and distributes
-                              them to Java server processes using a round-robin
-                              algorithm; does not execute application logic.
-                            </p>
-                            <ul class="process-details">
-                              <li>
-                                <b>Ports:</b> 80XX (8001) for HTTP, 443XX
-                                (44301) for HTTPS
-                              </li>
-                              <li>
-                                <b>Distributes to:</b> Java server processes of
-                                the instance
-                              </li>
-                            </ul>
-                          </div>
+                        <!-- ICM (Purple) -->
+                        <div class="process-box icm bg-purple-50 border border-purple-200 rounded p-2 mb-2 shadow-sm">
+                           <p class="process-title text-[10px] font-bold text-purple-900 mb-1">ICM (Internet Comm. Mgr)</p>
+                           <p class="process-desc text-[9px] text-slate-500">HTTP/HTTPS entry point.</p>
+                        </div>
 
-                          <div class="process-box dispatcher">
-                            <p class="process-title">
-                              <span class="badge badge-process">Process</span>
-                              Java Dispatcher
-                            </p>
-                            <p class="process-desc">
-                              Organizes the Java server processes of this
-                              instance and participates in the Java cluster
-                              together with Central Services and the database.
-                            </p>
-                            <ul class="process-details">
-                              <li>
-                                <b>Port:</b> 5XX04 (P4 protocol for internal
-                                Java instance communication)
-                              </li>
-                              <li>
-                                <b>Connects to:</b> Message Server for cluster
-                                information
-                              </li>
-                            </ul>
-                          </div>
+                        <!-- Dispatcher (Orange) -->
+                        <div class="process-box dispatcher bg-orange-50 border border-orange-200 rounded p-2 mb-2 shadow-sm">
+                           <p class="process-title text-[10px] font-bold text-orange-900 mb-1">Java Dispatcher</p>
+                           <p class="process-desc text-[9px] text-slate-500">Distributes requests to JVM nodes.</p>
+                        </div>
 
-                          <div class="jvm-node-group">
-                            <div class="jvm-node-group-header">
-                              <p class="jvm-node-group-title">
-                                Java Server Nodes (Cluster Members)
-                              </p>
-                              <p class="jvm-node-group-note">
-                                Execute Java EE applications; multi-threaded and
-                                part of the Java cluster.
-                              </p>
-                            </div>
+                        <!-- JVM Nodes -->
+                        <div class="jvm-node-group mt-2">
+                           <div class="jvm-node-group-header flex justify-between items-baseline mb-1">
+                             <p class="jvm-node-group-title text-[10px] font-bold text-slate-700">Java Server Nodes</p>
+                             <p class="jvm-node-group-note text-[8px] text-slate-400">Cluster Members</p>
+                           </div>
 
-                            <div class="process-box jvm">
-                              <p class="process-title">
-                                <span class="badge badge-process"
-                                  >JVM Process</span
-                                >
-                                Java Server Node 0 (server0)
-                              </p>
-                              <p class="process-desc">
-                                JVM process running the SAP Java Engine and
-                                application logic.
-                              </p>
-                              <ul class="process-details">
-                                <li>
-                                  <b>Started by:</b> jstart (Java launcher)
-                                </li>
-                                <li>
-                                  <b>JVM Heap:</b> -Xmx4096M (configured in
-                                  instance profile)
-                                </li>
-                                <li>
-                                  <b>P4 Port:</b> 5XX04 (P4 protocol for Java
-                                  Dispatcher communication)
-                                </li>
-                              </ul>
-
-                              <div class="jvm-internals">
-                                <p
-                                  style="
-                                    font-size: 11px;
-                                    font-weight: 700;
-                                    margin: 0 0 8px;
-                                    color: var(--ink);
-                                  "
-                                >
-                                  Inside JVM Process Memory:
-                                </p>
-
-                                <div class="jvm-section">
-                                  <p class="jvm-section-title">
-                                    🔹 Java EE / Jakarta EE Runtime
-                                  </p>
-                                  <ul class="jvm-items">
-                                    <li>
-                                      Servlet Container - handles HTTP requests
-                                      after dispatching
-                                    </li>
-                                    <li>
-                                      EJB Container - business logic components
-                                    </li>
-                                    <li>
-                                      Web Services Runtime - SOAP/REST endpoints
-                                    </li>
-                                    <li>
-                                      JPA / Persistence - ORM for database
-                                      access
-                                    </li>
-                                    <li>
-                                      JMS Provider - asynchronous messaging
-                                    </li>
+                           <div class="process-box jvm bg-amber-50 border border-amber-200 rounded p-2 mb-2 shadow-sm">
+                              <p class="process-title text-[10px] font-bold text-amber-900 mb-1">JVM Node 0 (server0)</p>
+                              
+                              <div class="jvm-internals mt-2 p-2 bg-white rounded border border-amber-100">
+                                <p class="text-[9px] font-bold text-slate-700 mb-1">JVM Internals:</p>
+                                <div class="jvm-section bg-slate-50 p-1.5 rounded mb-1 border border-slate-100">
+                                  <p class="jvm-section-title text-[9px] font-bold text-slate-600">🔹 Java EE Runtime</p>
+                                  <ul class="jvm-items text-[8px] text-slate-500 pl-2">
+                                    <li>Servlet Container</li>
+                                    <li>EJB Container</li>
                                   </ul>
                                 </div>
-
-                                <div class="jvm-section">
-                                  <p class="jvm-section-title">
-                                    🔹 SAP Java Engine Services
-                                  </p>
-                                  <ul class="jvm-items">
-                                    <li>
-                                      Service Framework - lifecycle management
-                                      of SAP services
-                                    </li>
-                                    <li>
-                                      Deploy Service - handles SCA/SDA
-                                      deployment
-                                    </li>
-                                    <li>
-                                      Cluster Service - communicates with
-                                      Message Server
-                                    </li>
-                                    <li>
-                                      Locking Service - interacts with Enqueue
-                                      Server
-                                    </li>
-                                    <li>
-                                      Configuration Service - reads/writes
-                                      config to DB
-                                    </li>
-                                    <li>
-                                      Log & Trace Service - application logging
-                                    </li>
-                                  </ul>
-                                </div>
-
-                                <div class="jvm-section">
-                                  <p class="jvm-section-title">
-                                    🔹 Deployed Applications
-                                  </p>
-                                  <ul class="jvm-items">
-                                    <li>Web Dynpro Runtime - UI framework</li>
-                                    <li>
-                                      SAP NetWeaver Portal - portal server
-                                      runtime
-                                    </li>
-                                    <li>
-                                      Custom Java Applications - business apps
-                                    </li>
-                                    <li>
-                                      SAP JCo - RFC connector for ABAP systems
-                                    </li>
-                                    <li>
-                                      JDBC Drivers - database connectivity
-                                    </li>
-                                  </ul>
-                                </div>
-
-                                <div class="jvm-section">
-                                  <p class="jvm-section-title">
-                                    🔹 Thread Pools & Resources
-                                  </p>
-                                  <ul class="jvm-items">
-                                    <li>
-                                      HTTP Worker Threads - process servlet
-                                      requests
-                                    </li>
-                                    <li>EJB Thread Pool - handle EJB calls</li>
-                                    <li>
-                                      Connection Pools - JDBC, JCo, JMS
-                                      connections
-                                    </li>
-                                    <li>
-                                      Session Manager - HTTP session cache
-                                    </li>
+                                <div class="jvm-section bg-slate-50 p-1.5 rounded mb-1 border border-slate-100">
+                                  <p class="jvm-section-title text-[9px] font-bold text-slate-600">🔹 Services</p>
+                                  <ul class="jvm-items text-[8px] text-slate-500 pl-2">
+                                    <li>Deploy, Cluster, Locking</li>
                                   </ul>
                                 </div>
                               </div>
-                            </div>
+                           </div>
 
-                            <div class="process-box jvm">
-                              <p class="process-title">
-                                <span class="badge badge-process"
-                                  >JVM Process</span
-                                >
-                                Java Server Node 1 (server1)
-                              </p>
-                              <p class="process-desc">
-                                Additional JVM process for horizontal scaling of
-                                execution capacity.
-                              </p>
-                              <ul class="process-details">
-                                <li>
-                                  <b>JVM Heap:</b> -Xmx4096M (separate memory
-                                  space)
-                                </li>
-                                <li><b>P4 Port:</b> 5XX05</li>
-                              </ul>
-                            </div>
-                          </div>
+                             <div class="process-box jvm bg-amber-50 border border-amber-200 rounded p-2 shadow-sm opacity-80">
+                                <p class="process-title text-[10px] font-bold text-amber-900 mb-0">JVM Node 1 (server1)</p>
+                             </div>
                         </div>
+
                       </div>
                     </div>
                   </div>
+                  <!-- Dynamic servers added here -->
                 </div>
               </div>
 
               <!-- Level 3: Database -->
-              <div class="vm-level">
-                <div class="vm-level-title">Database</div>
-                <div class="vm-level-content">
+              <div class="vm-level pb-4">
+                <div class="vm-level-title text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Database</div>
+                <div class="vm-level-content flex flex-wrap gap-4">
+                  
                   <!-- Database VM -->
-                  <div class="vm-container">
-                    <div class="vm-header">
-                      <span style="font-size: 18px">💻</span>
-                      <h3 class="vm-title">VM/Host: sap-hana-db-01</h3>
-                      <span class="badge badge-vm">Virtual Machine</span>
-                      <span class="vm-specs"
-                        >16 vCPU | 128GB RAM | SLES 15</span
-                      >
+                  <div class="vm-container bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-3 shadow-sm hover:border-slate-400 transition-all cursor-pointer flex-none w-[360px]">
+                    <div class="vm-header flex items-center gap-2 mb-3 bg-white p-2 rounded border border-slate-200 shadow-sm">
+                       <span class="text-lg">💻</span>
+                       <h3 class="vm-title text-xs font-bold text-slate-700">VM/Host: sap-hana-db-01</h3>
+                       <span class="badge badge-vm text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded border border-slate-200">Virtual Machine</span>
                     </div>
 
-                    <div class="os-layer">
-                      <div class="os-header">
-                        <span style="font-size: 14px">🐧</span>
-                        <h4 class="os-title">
-                          Operating System: SUSE Linux Enterprise Server 15
-                        </h4>
-                        <span class="badge badge-os">Linux</span>
-                      </div>
-                      <p
-                        style="
-                          font-size: 11px;
-                          color: var(--muted);
-                          margin: 0 0 12px;
-                        "
-                      >
-                        HANA-optimized kernel, huge pages configured, HANA user
-                        (j2eadm)
-                      </p>
+                     <div class="os-layer bg-sky-50 border border-sky-200 rounded-lg p-2 mb-3">
+                         <div class="os-header flex items-center gap-2 mb-1">
+                             <span class="text-sm">🐧</span>
+                             <h4 class="os-title text-[11px] font-bold text-sky-700">OS: SLES 15</h4>
+                         </div>
+                         
+                         <div class="sap-instance bg-slate-100 border border-slate-300 rounded-lg p-2.5 shadow-sm">
+                             <div class="instance-header flex items-center gap-2 mb-2 bg-white/60 p-1.5 rounded border border-slate-200">
+                                 <span class="text-sm">🗄️</span>
+                                 <h5 class="instance-title text-[11px] font-bold text-slate-800">SAP HANA Database</h5>
+                             </div>
 
-                      <div class="sap-instance">
-                        <div class="instance-header">
-                          <span style="font-size: 14px">🗄️</span>
-                          <h5 class="instance-title">SAP HANA Database</h5>
-                          <span class="badge badge-sap">Database Instance</span>
-                          <span class="instance-id">SID: J2E, Tenant: J2E</span>
-                        </div>
-
-                        <div
-                          class="process-box"
-                          style="
-                            border-color: rgba(251, 146, 60, 0.6);
-                            background: linear-gradient(
-                              135deg,
-                              rgba(251, 146, 60, 0.12),
-                              rgba(15, 23, 48, 0.85)
-                            );
-                          "
-                        >
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            hdbindexserver
-                          </p>
-                          <p class="process-desc">
-                            Main HANA database engine process serving SQL from
-                            all JVM nodes.
-                          </p>
-                          <ul class="process-details">
-                            <li><b>Port:</b> 3XX13 (30013 for instance 00)</li>
-                            <li>
-                              <b>Protocol:</b> SQL via JDBC from JVM nodes
-                            </li>
-                            <li>
-                              <b>Stores:</b> Java schema - config tables,
-                              deployment metadata, app data
-                            </li>
-                            <li>
-                              <b>Tables:</b> BC_*, deployment units, cluster
-                              state, etc.
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div
-                          class="process-box"
-                          style="
-                            border-color: rgba(251, 146, 60, 0.6);
-                            background: rgba(15, 23, 48, 0.9);
-                          "
-                        >
-                          <p class="process-title">Database Usage Breakdown</p>
-                          <ul class="process-details">
-                            <li>
-                              <b>Configuration & Cluster State:</b> instance
-                              profiles, Java cluster membership, locks metadata.
-                            </li>
-                            <li>
-                              <b>Deployment Metadata (SCA/SDA):</b> deployed
-                              software components, versions, and deployment
-                              descriptors.
-                            </li>
-                            <li>
-                              <b>Application Data:</b> business application
-                              tables accessed via JPA/JDBC from JVM nodes.
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div
-                          class="process-box"
-                          style="
-                            border-color: rgba(251, 146, 60, 0.6);
-                            background: linear-gradient(
-                              135deg,
-                              rgba(251, 146, 60, 0.12),
-                              rgba(15, 23, 48, 0.85)
-                            );
-                          "
-                        >
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            hdbdaemon
-                          </p>
-                          <p class="process-desc">
-                            HANA lifecycle management daemon
-                          </p>
-                        </div>
-
-                        <div
-                          class="process-box"
-                          style="
-                            border-color: rgba(251, 146, 60, 0.6);
-                            background: linear-gradient(
-                              135deg,
-                              rgba(251, 146, 60, 0.12),
-                              rgba(15, 23, 48, 0.85)
-                            );
-                          "
-                        >
-                          <p class="process-title">
-                            <span class="badge badge-process">Process</span>
-                            hdbcompileserver, hdbpreprocessor
-                          </p>
-                          <p class="process-desc">
-                            SQL compilation and query processing
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                             <div class="process-box bg-white border border-slate-300 rounded p-2 mb-1 shadow-sm">
+                                <p class="process-title text-[10px] font-bold text-slate-800 mb-1">hdbindexserver</p>
+                                <p class="process-desc text-[9px] text-slate-500">Main DB engine. Stores Java Schema.</p>
+                             </div>
+                             <div class="process-box bg-white border border-slate-300 rounded p-2 shadow-sm">
+                                <p class="process-title text-[10px] font-bold text-slate-800 mb-1">hdbdaemon</p>
+                             </div>
+                         </div>
+                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div
-              style="
-                margin-top: 32px;
-                padding: 20px;
-                background: rgba(16, 26, 51, 0.65);
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <h3 style="margin: 0 0 14px; font-size: 14px">
-                📊 Key Communication Flows:
-              </h3>
-              <ul
-                style="
-                  margin: 0;
-                  padding-left: 20px;
-                  color: var(--muted);
-                  font-size: 11.5px;
-                  line-height: 1.6;
-                "
-              >
-                <li>
-                  <b>User Request Flow:</b> Browser → Load Balancer → ICM
-                  (VM1/VM2) → Dispatcher → JVM Node → Database
-                </li>
-                <li>
-                  <b>Cluster Communication:</b> All JVM Nodes ↔ Message Server
-                  (ASCS VM) for server list and cluster info
-                </li>
-                <li>
-                  <b>Locking:</b> All JVM Nodes ↔ Enqueue Server (ASCS VM) for
-                  distributed locks
-                </li>
-                <li>
-                  <b>Persistence:</b> All JVM Nodes → Database (JDBC
-                  connections) for config, metadata, app data
-                </li>
-                <li>
-                  <b>Session Replication:</b> JVM Nodes ↔ Database (if DB
-                  session store) or JVM-to-JVM (if in-memory replication)
-                </li>
-                <li>
-                  <b>Management:</b> Admin tools → sapstartsrv (each VM) →
-                  Control processes via SOAP/HTTP
-                </li>
-              </ul>
-            </div>
-
-            <div
-              style="
-                margin-top: 20px;
-                padding: 20px;
-                background: rgba(16, 26, 51, 0.65);
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <h3 style="margin: 0 0 14px; font-size: 14px">
-                🔧 Infrastructure Scaling Patterns:
-              </h3>
-              <ul
-                style="
-                  margin: 0;
-                  padding-left: 20px;
-                  color: var(--muted);
-                  font-size: 11.5px;
-                  line-height: 1.6;
-                "
-              >
-                <li>
-                  <b>Scale-up:</b> Add more vCPU/RAM to existing VMs, increase
-                  JVM heap sizes
-                </li>
-                <li>
-                  <b>Scale-out (nodes):</b> Add more JVM nodes to existing VMs
-                  (limited by VM resources)
-                </li>
-                <li>
-                  <b>Scale-out (VMs):</b> Add more Java app server VMs
-                  (sap-java-app-03, 04, etc.) - unlimited horizontal scaling
-                </li>
-                <li>
-                  <b>High Availability:</b> Add standby ASCS VM, configure
-                  database replication (HANA System Replication), use load
-                  balancer health checks
-                </li>
-                <li>
-                  <b>Disaster Recovery:</b> Replicate database to secondary
-                  datacenter, keep standby VMs ready
-                </li>
-              </ul>
             </div>
           </div>
         </div>
       </section>
-    </main>
 
-      <!-- Flow View -->
-      <section class="flow-view-shell" id="flowView" style="display: none;">
-        <div class="flow-view-container">
-          <div class="flow-canvas" id="flowCanvas">
-            <!-- Components will be positioned here -->
-            <div class="flow-component" id="client" data-component="client">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">Client / Browser</div>
+      <!-- Flow View Shell (Hidden by default) -->
+      <section class="flow-view-shell hidden bg-white rounded-xl border border-slate-200 p-8 min-h-[600px] relative shadow-sm" id="flowView">
+        <div class="flow-view-container h-full">
+           <div class="flow-canvas relative h-full w-full" id="flowCanvas">
+              <!-- Components managed by script.js -->
+              <div class="flow-component absolute bg-white border-2 border-slate-300 rounded-lg p-3 shadow-md w-40" id="client">
+                 <div class="flow-comp-title text-xs font-bold text-center text-slate-700">Client / Browser</div>
               </div>
-            </div>
-            
-            <div class="flow-component" id="loadbalancer" data-component="loadbalancer">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">Load Balancer / Web Dispatcher</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="icm-pas" data-component="icm">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">ICM (PAS)</div>
-                <div class="flow-comp-subtitle">Instance 01</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="icm-aas" data-component="icm">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">ICM (AAS)</div>
-                <div class="flow-comp-subtitle">Instance 02</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="dispatcher-pas" data-component="dispatcher">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">Java Dispatcher (PAS)</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="dispatcher-aas" data-component="dispatcher">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">Java Dispatcher (AAS)</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="jvm-pas-0" data-component="jvm">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">JVM Server 0</div>
-                <div class="flow-comp-subtitle">PAS</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="jvm-pas-1" data-component="jvm">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">JVM Server 1</div>
-                <div class="flow-comp-subtitle">PAS</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="jvm-aas-0" data-component="jvm">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">JVM Server 0</div>
-                <div class="flow-comp-subtitle">AAS</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="database" data-component="database">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">Database</div>
-                <div class="flow-comp-subtitle">HANA</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="messageserver" data-component="messageserver">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">Message Server</div>
-                <div class="flow-comp-subtitle">Central Services</div>
-              </div>
-            </div>
-
-            <div class="flow-component" id="enqueueserver" data-component="enqueueserver">
-              <div class="flow-comp-box">
-                <div class="flow-comp-title">Enqueue Server</div>
-                <div class="flow-comp-subtitle">Central Services</div>
-              </div>
-            </div>
-
-            <!-- Animated arrows will be created dynamically -->
-          </div>
-
-          <div class="flow-explanation-panel" id="flowExplanationPanel">
-            <div class="explanation-header">
-              <h3>Architecture Flow Explanation</h3>
-            </div>
-            <div class="explanation-content" id="explanationContent">
-              <div class="explanation-step">
-                <h4 id="stepTitle">Select a flow to begin</h4>
-                <ul id="stepBullets">
-                  <li>Choose a flow from the dropdown above</li>
-                  <li>Click Play to start the animation</li>
-                  <li>Use Step Forward/Back to navigate manually</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+           </div>
         </div>
       </section>
+
     </main>
 
-    <!-- Component Info Modal -->
-    <div id="componentModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 id="modalTitle"></h2>
-          <button class="modal-close" id="modalClose">&times;</button>
-        </div>
-        <div class="modal-body" id="modalBody"></div>
-      </div>
+    <!-- Component Modal -->
+    <div id="componentModal" class="modal hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center backdrop-blur-sm">
+       <div class="modal-content bg-white rounded-xl shadow-2xl w-[90%] max-w-[500px] overflow-hidden border border-slate-200 animate-[fadeIn_0.2s_ease-out]">
+          <div class="modal-header bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
+             <h2 id="modalTitle" class="text-base font-bold text-slate-800 flex items-center gap-2">Component Info</h2>
+             <button id="modalClose" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+          </div>
+          <div id="modalBody" class="p-6 text-sm text-slate-600 space-y-4 max-h-[70vh] overflow-y-auto">
+             <!-- Dynamic Content -->
+          </div>
+       </div>
     </div>
 
     <script src="script.js"></script>
