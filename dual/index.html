@@ -1,540 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SAP Dual Stack Architecture (Detailed & Corrected)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .diagram-box {
-            transition: all 0.2s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .diagram-box:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            z-index: 10;
-            border-color: #3b82f6;
-        }
-
-        .diagram-box.active {
-            border-color: #2563eb !important;
-            box-shadow: 0 0 0 2px #2563eb !important;
-            z-index: 20;
-        }
-
-        /* Instance Containers */
-        .instance-box {
-            background-color: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 8px;
-            margin-bottom: 12px;
-            position: relative;
-        }
-        
-        .instance-label {
-            position: absolute;
-            top: -8px;
-            left: 10px;
-            background-color: #fff;
-            padding: 0 6px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            color: #475569;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-        }
-
-        /* Specific patterns */
-        .abap-bg { background-color: #eff6ff; }
-        .java-bg { background-color: #fff7ed; }
-        .vm-bg { background-color: #f8fafc; border: 2px dashed #94a3b8; }
-        .infra-bg { background-color: #f1f5f9; border-color: #cbd5e1; }
-        .svc-bg { background-color: #e0e7ff; border-color: #c7d2fe; }
-        .shared-bg { background-color: #f3e8ff; border-color: #d8b4fe; } 
-        
-        /* Sub-component styling */
-        .sub-box {
-            font-size: 0.60rem;
-            line-height: 0.9rem;
-            padding: 2px;
-            border: 1px solid rgba(0,0,0,0.1);
-            background-color: rgba(255,255,255,0.8);
-            border-radius: 2px;
-            text-align: center;
-        }
-        .sub-box:hover {
-            background-color: #fff;
-            border-color: #64748b;
-        }
-        
-        .container-label {
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            color: #64748b;
-            margin-bottom: 4px;
-            display: block;
-            font-weight: bold;
-            text-align: center;
-        }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
-
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
     <!-- Header -->
     <header class="bg-slate-900 text-white p-3 shadow-lg sticky top-0 z-50">
-        <div class="max-w-[95%] mx-auto flex justify-between items-center">
-            <h1 class="text-lg font-bold flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-                SAP Dual Stack (Production View)
-            </h1>
-            <p class="text-xs text-slate-400 hidden sm:block">Detailed Component Inspector</p>
-        </div>
+      <div class="max-w-[95%] mx-auto flex justify-between items-center">
+        <h1 class="text-lg font-bold flex items-center gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-blue-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            />
+          </svg>
+          SAP Dual Stack (Production View)
+        </h1>
+        <p class="text-xs text-slate-400 hidden sm:block">
+          Detailed Component Inspector
+        </p>
+      </div>
     </header>
 
     <main class="flex-grow flex flex-col lg:flex-row w-full p-2 gap-4">
-
-        <!-- Diagram Container -->
-        <div class="flex-grow relative overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200 p-4 min-w-[700px]">
-            
-            <!-- Clients -->
-            <div class="flex justify-center gap-24 mb-6 relative z-10">
-                <div onclick="showInfo('sapgui')" class="diagram-box w-32 p-2 bg-blue-100 border-2 border-blue-200 rounded text-center text-xs font-semibold shadow-sm">
-                    SAP GUI
-                    <div class="sub-box mt-1 text-[9px] text-blue-600">DIAG Protocol</div>
-                </div>
-                <div onclick="showInfo('browser')" class="diagram-box w-32 p-2 bg-orange-100 border-2 border-orange-200 rounded text-center text-xs font-semibold shadow-sm">
-                    Web Browser
-                    <div class="sub-box mt-1 text-[9px] text-orange-600">HTTP/HTTPS</div>
-                </div>
+      <!-- Diagram Container -->
+      <div
+        class="flex-grow relative overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200 p-4 min-w-[700px]"
+      >
+        <!-- Clients -->
+        <div class="flex justify-center gap-24 mb-6 relative z-10">
+          <div
+            onclick="showInfo('sapgui')"
+            class="diagram-box w-32 p-2 bg-blue-100 border-2 border-blue-200 rounded text-center text-xs font-semibold shadow-sm"
+          >
+            SAP GUI
+            <div class="sub-box mt-1 text-[9px] text-blue-600">
+              DIAG Protocol
             </div>
-
-            <!-- Virtual Machine Container -->
-            <div onclick="showInfo('vm')" class="vm-bg p-4 rounded-lg relative mb-8 pt-8">
-                <div class="absolute -top-3 left-4 bg-slate-500 text-white text-[10px] px-2 py-1 rounded shadow">Virtual Machine / Host (Single Host Lab Scenario)</div>
-                
-                <!-- The Two Stacks Columns -->
-                <div class="grid grid-cols-2 gap-6 relative">
-                    
-                    <!-- Vertical Divider -->
-                    <div class="absolute left-1/2 top-0 bottom-0 w-px bg-slate-300 -translate-x-1/2 hidden md:block"></div>
-
-                    <!-- LEFT COLUMN: ABAP STACK -->
-                    <div class="flex flex-col">
-                        
-                        <!-- Instance 1: ASCS (ABAP Central Services) -->
-                        <div class="instance-box abap-bg">
-                            <span class="instance-label">Instance 00: ASCS (ABAP Central Services)</span>
-                            <div class="grid grid-cols-3 gap-2 mt-2">
-                                <div onclick="showInfo('abap_ms')" class="diagram-box p-1 svc-bg border border-blue-300 rounded text-center text-[10px] font-bold">
-                                    Msg Server
-                                </div>
-                                <div onclick="showInfo('abap_es')" class="diagram-box p-1 svc-bg border border-blue-300 rounded text-center text-[10px] font-bold">
-                                    Enqueue
-                                </div>
-                                <div onclick="showInfo('sapstartsrv')" class="diagram-box p-1 infra-bg border rounded text-center">
-                                    <span class="text-[9px] text-slate-500">sapstartsrv</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Instance 2: ABAP PAS (Primary App Server) -->
-                        <div class="instance-box abap-bg">
-                            <span class="instance-label">Instance 01: ABAP PAS</span>
-                            
-                            <!-- Infrastructure Row -->
-                            <div class="flex justify-between mb-2 mt-1">
-                                <div onclick="showInfo('sapstartsrv')" class="diagram-box px-2 py-1 infra-bg border rounded text-[9px] text-slate-500">sapstartsrv</div>
-                                <div onclick="showInfo('igs')" class="diagram-box px-2 py-1 infra-bg border rounded text-[9px] text-slate-500">IGS (Optional)</div>
-                            </div>
-
-                            <!-- ICM -->
-                            <div onclick="showInfo('icm')" class="diagram-box w-full p-1 shared-bg border-2 border-purple-200 rounded text-center shadow-sm mb-2">
-                                <span class="font-bold text-purple-900 text-xs">ICM</span>
-                                <div class="flex gap-1 mt-1 justify-center">
-                                    <div class="sub-box w-12 bg-purple-50 text-[8px]">Threads</div>
-                                    <div class="sub-box w-12 bg-purple-50 text-[8px]">MPI</div>
-                                </div>
-                            </div>
-
-                            <!-- Dispatcher -->
-                            <div onclick="showInfo('dispatcher_abap')" class="diagram-box p-2 bg-white border-2 border-blue-300 rounded text-center shadow-sm mb-2">
-                                <span class="font-bold text-xs">ABAP Dispatcher</span>
-                                <div class="sub-box mt-1 w-full bg-blue-50 text-[9px]">Request Queue</div>
-                            </div>
-                            
-                            <!-- Shared Memory -->
-                             <div onclick="showInfo('abap_mem')" class="diagram-box p-1 bg-blue-50 border border-blue-200 border-dashed rounded text-center mb-2">
-                                <span class="text-[9px] font-bold text-blue-400 uppercase">Shared Memory</span>
-                                <div class="flex justify-center gap-1 mt-1">
-                                    <div class="sub-box text-[8px] bg-white">PXA</div>
-                                    <div class="sub-box text-[8px] bg-white">Roll Area</div>
-                                    <div class="sub-box text-[8px] bg-white">Table Buf</div>
-                                </div>
-                            </div>
-
-                            <!-- Work Processes Grid -->
-                            <div class="space-y-1">
-                                <span class="container-label text-[9px]">Work Processes</span>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <!-- DIA -->
-                                    <div onclick="showInfo('wp_dia')" class="diagram-box p-1 bg-white border-2 border-blue-400 rounded">
-                                        <div class="text-[10px] font-bold text-center text-blue-800">DIA (Dialog)</div>
-                                    </div>
-                                    <!-- BTC -->
-                                    <div onclick="showInfo('wp_btc')" class="diagram-box p-1 bg-blue-50 border border-blue-300 rounded">
-                                        <div class="text-[10px] font-bold text-center text-blue-700">BTC (Batch)</div>
-                                    </div>
-                                    <!-- UPD -->
-                                    <div onclick="showInfo('wp_upd')" class="diagram-box p-1 bg-blue-50 border border-blue-300 rounded">
-                                        <div class="text-[10px] font-bold text-center text-blue-700">UPD (V1)</div>
-                                    </div>
-                                    <!-- UP2 (NEW) -->
-                                    <div onclick="showInfo('wp_up2')" class="diagram-box p-1 bg-blue-50 border border-blue-300 rounded">
-                                        <div class="text-[10px] font-bold text-center text-blue-700">UP2 (V2)</div>
-                                    </div>
-                                    <!-- SPO (NEW) -->
-                                    <div onclick="showInfo('wp_spo')" class="diagram-box p-1 bg-blue-50 border border-blue-300 rounded col-span-2">
-                                        <div class="text-[10px] font-bold text-center text-blue-700">SPO (Spool)</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Gateway -->
-                            <div onclick="showInfo('gateway')" class="diagram-box mt-2 p-1 bg-slate-200 border border-slate-400 rounded text-center">
-                                <span class="font-bold text-[10px]">Gateway (RFC)</span>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <!-- RIGHT COLUMN: JAVA STACK -->
-                    <div class="flex flex-col">
-
-                        <!-- Instance 3: SCS (Java Central Services) -->
-                        <div class="instance-box java-bg">
-                            <span class="instance-label">Instance 02: SCS (Java Central Services)</span>
-                            <div class="grid grid-cols-3 gap-2 mt-2">
-                                <div onclick="showInfo('java_ms')" class="diagram-box p-1 svc-bg border border-orange-300 rounded text-center text-[10px] font-bold">
-                                    Msg Server
-                                </div>
-                                <div onclick="showInfo('java_enq')" class="diagram-box p-1 svc-bg border border-orange-300 rounded text-center text-[10px] font-bold">
-                                    Enqueue
-                                </div>
-                                <div onclick="showInfo('sapstartsrv')" class="diagram-box p-1 infra-bg border rounded text-center">
-                                    <span class="text-[9px] text-slate-500">sapstartsrv</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Instance 4: Java PAS -->
-                        <div class="instance-box java-bg flex-grow">
-                            <span class="instance-label">Instance 03: Java PAS</span>
-                            
-                            <!-- Infrastructure -->
-                            <div class="flex justify-between mb-2 mt-1">
-                                <div onclick="showInfo('sapstartsrv')" class="diagram-box px-2 py-1 infra-bg border rounded text-[9px] text-slate-500">sapstartsrv</div>
-                                <div onclick="showInfo('jstart')" class="diagram-box px-2 py-1 infra-bg border rounded text-[9px] text-slate-500">jstart/jlaunch</div>
-                            </div>
-
-                            <!-- ICM (Added to Java Stack) -->
-                            <div onclick="showInfo('icm')" class="diagram-box w-full p-1 shared-bg border-2 border-purple-200 rounded text-center shadow-sm mb-2">
-                                <span class="font-bold text-purple-900 text-xs">ICM</span>
-                            </div>
-
-                            <div onclick="showInfo('dispatcher_java')" class="diagram-box p-2 bg-white border-2 border-orange-300 rounded text-center shadow-sm mb-4">
-                                <span class="font-bold text-xs">Java Dispatcher</span>
-                                <div class="grid grid-cols-2 gap-1 mt-1">
-                                    <div class="sub-box bg-orange-50 text-[8px]">Conn Mgr</div>
-                                    <div class="sub-box bg-orange-50 text-[8px]">Load Bal</div>
-                                </div>
-                            </div>
-
-                            <!-- Java Server Nodes -->
-                            <div class="flex flex-col gap-2">
-                                <div onclick="showInfo('server_node')" class="diagram-box p-2 bg-orange-50 border-2 border-orange-300 rounded">
-                                    <div class="flex items-center justify-center gap-2 mb-1">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                                        <span class="text-xs font-bold">Server Node 0 (JVM)</span>
-                                    </div>
-                                    <div class="grid grid-cols-1 gap-1">
-                                        <div onclick="showInfo('java_web'); event.stopPropagation();" class="sub-box bg-white">Web Container</div>
-                                        <div onclick="showInfo('java_ejb'); event.stopPropagation();" class="sub-box bg-white">EJB Container</div>
-                                        <div onclick="showInfo('java_persist'); event.stopPropagation();" class="sub-box bg-white">Persistence</div>
-                                    </div>
-                                </div>
-                                <div onclick="showInfo('server_node')" class="diagram-box p-1 bg-orange-50 border border-orange-300 rounded opacity-75 text-center">
-                                    <span class="text-[10px]">Server Node 1 (JVM) ...</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          </div>
+          <div
+            onclick="showInfo('browser')"
+            class="diagram-box w-32 p-2 bg-orange-100 border-2 border-orange-200 rounded text-center text-xs font-semibold shadow-sm"
+          >
+            Web Browser
+            <div class="sub-box mt-1 text-[9px] text-orange-600">
+              HTTP/HTTPS
             </div>
-
-            <!-- Database Layer -->
-            <div class="flex justify-center relative">
-                <div class="absolute -top-6 w-1/2 h-6 border-l-2 border-r-2 border-slate-300"></div>
-                
-                <div onclick="showInfo('db')" class="diagram-box w-2/3 max-w-sm p-3 bg-slate-100 border-2 border-slate-400 rounded-lg shadow-md relative z-10">
-                    <div class="flex items-center justify-center gap-2 mb-2">
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-                        <span class="font-bold text-slate-800 text-sm">DBMS (Database)</span>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                        <!-- Renamed Schemas -->
-                        <div onclick="showInfo('db_schema_abap'); event.stopPropagation();" class="sub-box p-2 bg-blue-100 border-blue-200 font-bold">ABAP Schema</div>
-                        <div onclick="showInfo('db_schema_java'); event.stopPropagation();" class="sub-box p-2 bg-orange-100 border-orange-200 font-bold">Java Schema</div>
-                    </div>
-                </div>
-            </div>
-
+          </div>
         </div>
 
-        <!-- Info Panel -->
-        <div class="lg:w-80 flex-shrink-0">
-            <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden sticky top-14">
-                <div class="bg-slate-100 p-3 border-b border-slate-200">
-                    <h2 class="font-bold text-sm text-slate-800 uppercase tracking-wide">Component Inspector</h2>
+        <!-- Virtual Machine Container -->
+        <div
+          onclick="showInfo('vm')"
+          class="vm-bg p-4 rounded-lg relative mb-8 pt-8"
+        >
+          <div
+            class="absolute -top-3 left-4 bg-slate-500 text-white text-[10px] px-2 py-1 rounded shadow"
+          >
+            Virtual Machine / Host (Single Host Lab Scenario)
+          </div>
+
+          <!-- The Two Stacks Columns -->
+          <div class="grid grid-cols-2 gap-6 relative">
+            <!-- Vertical Divider -->
+            <div
+              class="absolute left-1/2 top-0 bottom-0 w-px bg-slate-300 -translate-x-1/2 hidden md:block"
+            ></div>
+
+            <!-- LEFT COLUMN: ABAP STACK -->
+            <div class="flex flex-col">
+              <!-- Instance 1: ASCS (ABAP Central Services) -->
+              <div class="instance-box abap-bg">
+                <span class="instance-label"
+                  >Instance 00: ASCS (ABAP Central Services)</span
+                >
+                <div class="grid grid-cols-3 gap-2 mt-2">
+                  <div
+                    onclick="showInfo('abap_ms')"
+                    class="diagram-box p-1 svc-bg border border-blue-300 rounded text-center text-[10px] font-bold"
+                  >
+                    Msg Server
+                  </div>
+                  <div
+                    onclick="showInfo('abap_es')"
+                    class="diagram-box p-1 svc-bg border border-blue-300 rounded text-center text-[10px] font-bold"
+                  >
+                    Enqueue
+                  </div>
+                  <div
+                    onclick="showInfo('sapstartsrv')"
+                    class="diagram-box p-1 infra-bg border rounded text-center"
+                  >
+                    <span class="text-[9px] text-slate-500">sapstartsrv</span>
+                  </div>
                 </div>
-                <div id="info-content" class="p-4 h-[calc(100vh-150px)] overflow-y-auto">
-                    <div class="text-center text-slate-400 py-8">
-                        <p class="text-sm">Select a component to view detailed architecture.</p>
+              </div>
+
+              <!-- Instance 2: ABAP PAS (Primary App Server) -->
+              <div class="instance-box abap-bg">
+                <span class="instance-label">Instance 01: ABAP PAS</span>
+
+                <!-- Infrastructure Row -->
+                <div class="flex justify-between mb-2 mt-1">
+                  <div
+                    onclick="showInfo('sapstartsrv')"
+                    class="diagram-box px-2 py-1 infra-bg border rounded text-[9px] text-slate-500"
+                  >
+                    sapstartsrv
+                  </div>
+                  <div
+                    onclick="showInfo('igs')"
+                    class="diagram-box px-2 py-1 infra-bg border rounded text-[9px] text-slate-500"
+                  >
+                    IGS (Optional)
+                  </div>
+                </div>
+
+                <!-- ICM -->
+                <div
+                  onclick="showInfo('icm')"
+                  class="diagram-box w-full p-1 shared-bg border-2 border-purple-200 rounded text-center shadow-sm mb-2"
+                >
+                  <span class="font-bold text-purple-900 text-xs">ICM</span>
+                  <div class="flex gap-1 mt-1 justify-center">
+                    <div class="sub-box w-12 bg-purple-50 text-[8px]">
+                      Threads
                     </div>
+                    <div class="sub-box w-12 bg-purple-50 text-[8px]">MPI</div>
+                  </div>
                 </div>
+
+                <!-- Dispatcher -->
+                <div
+                  onclick="showInfo('dispatcher_abap')"
+                  class="diagram-box p-2 bg-white border-2 border-blue-300 rounded text-center shadow-sm mb-2"
+                >
+                  <span class="font-bold text-xs">ABAP Dispatcher</span>
+                  <div class="sub-box mt-1 w-full bg-blue-50 text-[9px]">
+                    Request Queue
+                  </div>
+                </div>
+
+                <!-- Shared Memory -->
+                <div
+                  onclick="showInfo('abap_mem')"
+                  class="diagram-box p-1 bg-blue-50 border border-blue-200 border-dashed rounded text-center mb-2"
+                >
+                  <span class="text-[9px] font-bold text-blue-400 uppercase"
+                    >Shared Memory</span
+                  >
+                  <div class="flex justify-center gap-1 mt-1">
+                    <div class="sub-box text-[8px] bg-white">PXA</div>
+                    <div class="sub-box text-[8px] bg-white">Roll Area</div>
+                    <div class="sub-box text-[8px] bg-white">Table Buf</div>
+                  </div>
+                </div>
+
+                <!-- Work Processes Grid -->
+                <div class="space-y-1">
+                  <span class="container-label text-[9px]">Work Processes</span>
+                  <div class="grid grid-cols-2 gap-2">
+                    <!-- DIA -->
+                    <div
+                      onclick="showInfo('wp_dia')"
+                      class="diagram-box p-1 bg-white border-2 border-blue-400 rounded"
+                    >
+                      <div
+                        class="text-[10px] font-bold text-center text-blue-800"
+                      >
+                        DIA (Dialog)
+                      </div>
+                    </div>
+                    <!-- BTC -->
+                    <div
+                      onclick="showInfo('wp_btc')"
+                      class="diagram-box p-1 bg-blue-50 border border-blue-300 rounded"
+                    >
+                      <div
+                        class="text-[10px] font-bold text-center text-blue-700"
+                      >
+                        BTC (Batch)
+                      </div>
+                    </div>
+                    <!-- UPD -->
+                    <div
+                      onclick="showInfo('wp_upd')"
+                      class="diagram-box p-1 bg-blue-50 border border-blue-300 rounded"
+                    >
+                      <div
+                        class="text-[10px] font-bold text-center text-blue-700"
+                      >
+                        UPD (V1)
+                      </div>
+                    </div>
+                    <!-- UP2 (NEW) -->
+                    <div
+                      onclick="showInfo('wp_up2')"
+                      class="diagram-box p-1 bg-blue-50 border border-blue-300 rounded"
+                    >
+                      <div
+                        class="text-[10px] font-bold text-center text-blue-700"
+                      >
+                        UP2 (V2)
+                      </div>
+                    </div>
+                    <!-- SPO (NEW) -->
+                    <div
+                      onclick="showInfo('wp_spo')"
+                      class="diagram-box p-1 bg-blue-50 border border-blue-300 rounded col-span-2"
+                    >
+                      <div
+                        class="text-[10px] font-bold text-center text-blue-700"
+                      >
+                        SPO (Spool)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Gateway -->
+                <div
+                  onclick="showInfo('gateway')"
+                  class="diagram-box mt-2 p-1 bg-slate-200 border border-slate-400 rounded text-center"
+                >
+                  <span class="font-bold text-[10px]">Gateway (RFC)</span>
+                </div>
+              </div>
             </div>
+
+            <!-- RIGHT COLUMN: JAVA STACK -->
+            <div class="flex flex-col">
+              <!-- Instance 3: SCS (Java Central Services) -->
+              <div class="instance-box java-bg">
+                <span class="instance-label"
+                  >Instance 02: SCS (Java Central Services)</span
+                >
+                <div class="grid grid-cols-3 gap-2 mt-2">
+                  <div
+                    onclick="showInfo('java_ms')"
+                    class="diagram-box p-1 svc-bg border border-orange-300 rounded text-center text-[10px] font-bold"
+                  >
+                    Msg Server
+                  </div>
+                  <div
+                    onclick="showInfo('java_enq')"
+                    class="diagram-box p-1 svc-bg border border-orange-300 rounded text-center text-[10px] font-bold"
+                  >
+                    Enqueue
+                  </div>
+                  <div
+                    onclick="showInfo('sapstartsrv')"
+                    class="diagram-box p-1 infra-bg border rounded text-center"
+                  >
+                    <span class="text-[9px] text-slate-500">sapstartsrv</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Instance 4: Java PAS -->
+              <div class="instance-box java-bg flex-grow">
+                <span class="instance-label">Instance 03: Java PAS</span>
+
+                <!-- Infrastructure -->
+                <div class="flex justify-between mb-2 mt-1">
+                  <div
+                    onclick="showInfo('sapstartsrv')"
+                    class="diagram-box px-2 py-1 infra-bg border rounded text-[9px] text-slate-500"
+                  >
+                    sapstartsrv
+                  </div>
+                  <div
+                    onclick="showInfo('jstart')"
+                    class="diagram-box px-2 py-1 infra-bg border rounded text-[9px] text-slate-500"
+                  >
+                    jstart/jlaunch
+                  </div>
+                </div>
+
+                <!-- ICM (Added to Java Stack) -->
+                <div
+                  onclick="showInfo('icm')"
+                  class="diagram-box w-full p-1 shared-bg border-2 border-purple-200 rounded text-center shadow-sm mb-2"
+                >
+                  <span class="font-bold text-purple-900 text-xs">ICM</span>
+                </div>
+
+                <div
+                  onclick="showInfo('dispatcher_java')"
+                  class="diagram-box p-2 bg-white border-2 border-orange-300 rounded text-center shadow-sm mb-4"
+                >
+                  <span class="font-bold text-xs">Java Dispatcher</span>
+                  <div class="grid grid-cols-2 gap-1 mt-1">
+                    <div class="sub-box bg-orange-50 text-[8px]">Conn Mgr</div>
+                    <div class="sub-box bg-orange-50 text-[8px]">Load Bal</div>
+                  </div>
+                </div>
+
+                <!-- Java Server Nodes -->
+                <div class="flex flex-col gap-2">
+                  <div
+                    onclick="showInfo('server_node')"
+                    class="diagram-box p-2 bg-orange-50 border-2 border-orange-300 rounded"
+                  >
+                    <div class="flex items-center justify-center gap-2 mb-1">
+                      <div
+                        class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"
+                      ></div>
+                      <span class="text-xs font-bold">Server Node 0 (JVM)</span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-1">
+                      <div
+                        onclick="showInfo('java_web'); event.stopPropagation();"
+                        class="sub-box bg-white"
+                      >
+                        Web Container
+                      </div>
+                      <div
+                        onclick="showInfo('java_ejb'); event.stopPropagation();"
+                        class="sub-box bg-white"
+                      >
+                        EJB Container
+                      </div>
+                      <div
+                        onclick="showInfo('java_persist'); event.stopPropagation();"
+                        class="sub-box bg-white"
+                      >
+                        Persistence
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    onclick="showInfo('server_node')"
+                    class="diagram-box p-1 bg-orange-50 border border-orange-300 rounded opacity-75 text-center"
+                  >
+                    <span class="text-[10px]">Server Node 1 (JVM) ...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
+        <!-- Database Layer -->
+        <div class="flex justify-center relative">
+          <div
+            class="absolute -top-6 w-1/2 h-6 border-l-2 border-r-2 border-slate-300"
+          ></div>
+
+          <div
+            onclick="showInfo('db')"
+            class="diagram-box w-2/3 max-w-sm p-3 bg-slate-100 border-2 border-slate-400 rounded-lg shadow-md relative z-10"
+          >
+            <div class="flex items-center justify-center gap-2 mb-2">
+              <svg
+                class="w-4 h-4 text-slate-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
+                ></path>
+              </svg>
+              <span class="font-bold text-slate-800 text-sm"
+                >DBMS (Database)</span
+              >
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <!-- Renamed Schemas -->
+              <div
+                onclick="showInfo('db_schema_abap'); event.stopPropagation();"
+                class="sub-box p-2 bg-blue-100 border-blue-200 font-bold"
+              >
+                ABAP Schema
+              </div>
+              <div
+                onclick="showInfo('db_schema_java'); event.stopPropagation();"
+                class="sub-box p-2 bg-orange-100 border-orange-200 font-bold"
+              >
+                Java Schema
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Panel -->
+      <div class="lg:w-80 flex-shrink-0">
+        <div
+          class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden sticky top-14"
+        >
+          <div class="bg-slate-100 p-3 border-b border-slate-200">
+            <h2
+              class="font-bold text-sm text-slate-800 uppercase tracking-wide"
+            >
+              Component Inspector
+            </h2>
+          </div>
+          <div
+            id="info-content"
+            class="p-4 h-[calc(100vh-150px)] overflow-y-auto"
+          >
+            <div class="text-center text-slate-400 py-8">
+              <p class="text-sm">
+                Select a component to view detailed architecture.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
-    <script>
-        // Data Definitions
-        const componentData = {
-            // General
-            vm: {
-                title: "Virtual Machine / Host",
-                type: "Infrastructure",
-                description: "Depicts a single-host scenario (e.g., a lab system) where multiple instances run on one OS. In production, ASCS/SCS often run on separate VMs for High Availability.",
-                tech: "OS (Linux/Windows)"
-            },
-            sapgui: {
-                title: "SAP GUI",
-                type: "Client",
-                description: "The primary client for ABAP. It connects to the ABAP Dispatcher via DIAG protocol. Flow: SAP GUI -> Message Server (Logon/Load Balancing) -> Dispatcher -> Work Process.",
-                tech: "C++ / Proprietary"
-            },
-            browser: {
-                title: "Web Browser",
-                type: "Client",
-                description: "Web client for Java apps (Web Dynpro Java) and ABAP web apps (Fiori, BSP, Web Dynpro ABAP). Connects via HTTP/HTTPS to the ICM.",
-                tech: "HTML5"
-            },
-            
-            // Services
-            sapstartsrv: {
-                title: "SAP Start Service (sapstartsrv)",
-                type: "Instance Service",
-                description: "Runs PER INSTANCE (ASCS, SCS, PAS). It controls the startup/shutdown of that specific instance, monitors processes, and exposes SOAP APIs for management tools (SAP MMC, SUM).",
-                tech: "Binary: sapstartsrv"
-            },
-            igs: {
-                title: "IGS (Internet Graphics Server)",
-                type: "Graphics Engine (Optional)",
-                description: "Generates charts and graphics (e.g., for forms). Optional component; may run on the same host or a separate host.",
-                tech: "C++ Engine"
-            },
-            icm: {
-                title: "ICM (Internet Comm Manager)",
-                type: "Gateway Process",
-                description: "Handles HTTP/HTTPS/SMTP communication. Present in both ABAP and Java instances to handle web requests for that stack.",
-                tech: "C++ Process"
-            },
-            jstart: {
-                title: "Java Startup Framework",
-                type: "Bootstrap",
-                description: "Processes (jstart/jlaunch) responsible for bootstrapping the Java instance, launching the dispatcher and server nodes, and monitoring their health.",
-                tech: "Native Loader"
-            },
-
-            // ABAP Components
-            abap_ms: {
-                title: "ABAP Message Server (ASCS)",
-                type: "Central Service",
-                description: "Handles communication between distributed application servers and performs logon load balancing for SAP GUI.",
-                tech: "Kernel Process (msg_server)"
-            },
-            abap_es: {
-                title: "ABAP Enqueue Server (ASCS)",
-                type: "Lock Manager",
-                description: "Manages the lock table to ensure logical locking and data consistency across the ABAP system.",
-                tech: "Kernel Process (enserver)"
-            },
-            dispatcher_abap: {
-                title: "ABAP Dispatcher",
-                type: "Request Distributor",
-                description: "Distributes requests to the appropriate work process type. Manages the request queues.",
-                tech: "Kernel Process"
-            },
-            abap_mem: {
-                title: "ABAP Shared Memory",
-                type: "Memory Management",
-                description: "Shared memory areas accessible by all Work Processes. Includes PXA (Program Execution Area), Table Buffers, and Extended Memory.",
-                tech: "Shared Memory Segments"
-            },
-            gateway: {
-                title: "SAP Gateway",
-                type: "RFC Handler",
-                description: "Enables RFC (Remote Function Call) communication between SAP systems and external programs.",
-                tech: "SAP Gateway (RFC), kernel process"
-            },
-
-            // ABAP Work Processes
-            wp_dia: {
-                title: "Dialog Work Process (DIA)",
-                type: "Execution Unit",
-                description: "Processes interactive user steps. Each step of a transaction may be handled by a different DIA process.",
-                tech: "ABAP Runtime"
-            },
-            wp_btc: {
-                title: "Batch Work Process (BTC)",
-                type: "Background Execution",
-                description: "Executes non-interactive background jobs. Shares the ABAP VM but operates without a UI connection.",
-                tech: "ABAP Runtime"
-            },
-            wp_upd: {
-                title: "Update Work Process (UPD / V1)",
-                type: "Update Task Handler",
-                description: "Processes time-critical V1 update modules (database changes) asynchronously after a COMMIT WORK.",
-                tech: "ABAP Runtime"
-            },
-            wp_up2: {
-                title: "Update Process 2 (UP2 / V2)",
-                type: "Secondary Update",
-                description: "Processes less critical V2 update modules (e.g., statistics) asynchronously to reduce load on the primary V1 update process.",
-                tech: "ABAP Runtime"
-            },
-            wp_spo: {
-                title: "Spool Work Process (SPO)",
-                type: "Output Management",
-                description: "Manages sequential data streams for output (printing). Formats data and passes it to the host spool system.",
-                tech: "Output Controller"
-            },
-
-            // Java Components
-            java_ms: {
-                title: "Java Message Server (SCS)",
-                type: "Central Service",
-                description: "Handles communication between Java server nodes and instances.",
-                tech: "Java Service"
-            },
-            java_enq: {
-                title: "Java Enqueue Server (SCS)",
-                type: "Lock Manager",
-                description: "Manages logical locks for Java objects to ensure consistency.",
-                tech: "Java Service"
-            },
-            dispatcher_java: {
-                title: "Java Dispatcher",
-                type: "Load Balancer",
-                description: "Receives requests (typically from ICM) and routes them to the available Server Processes/Nodes.",
-                tech: "Native/Java Process"
-            },
-            server_node: {
-                title: "Server Node (JVM)",
-                type: "Application Runtime",
-                description: "The Java Virtual Machine running the applications.",
-                tech: "JVM"
-            },
-            java_web: {
-                title: "Web Container",
-                type: "Java Container",
-                description: "Runtime environment for Java Servlets and JSPs.",
-                tech: "Servlet Engine"
-            },
-            java_ejb: {
-                title: "EJB Container",
-                type: "Java Container",
-                description: "Runtime environment for Enterprise Java Beans.",
-                tech: "EJB Runtime"
-            },
-            java_persist: {
-                title: "Persistence Manager",
-                type: "Data Access",
-                description: "Manages database connections and Object-Relational Mapping (JPA/JDO).",
-                tech: "JPA Provider"
-            },
-
-            // Database
-            db: {
-                title: "Database System",
-                type: "Persistence",
-                description: "The central database management system.",
-                tech: "RDBMS"
-            },
-            db_schema_abap: {
-                title: "ABAP Schema",
-                type: "Database Schema",
-                description: "Contains all ABAP dictionary objects and business data. Accessed via the default DB user for ABAP.",
-                tech: "SQL Schema"
-            },
-            db_schema_java: {
-                title: "Java Schema",
-                type: "Database Schema",
-                description: "Contains data for Java applications. Accessed via a separate DB user for Java.",
-                tech: "SQL Schema"
-            }
-        };
-
-        // UI Logic
-        function showInfo(key) {
-            const data = componentData[key] || { title: key, type: "Unknown", description: "Details not available", tech: "-" };
-            const contentDiv = document.getElementById('info-content');
-            
-            // Highlight logic
-            document.querySelectorAll('.diagram-box, .vm-bg, .sub-box').forEach(el => el.classList.remove('active'));
-
-            if (data) {
-                let typeColor = "bg-slate-100 text-slate-600";
-                if(data.type.includes("ABAP") || key.includes("abap") || key.includes("wp")) typeColor = "bg-blue-100 text-blue-800";
-                if(data.type.includes("Java") || key.includes("java") || key.includes("scs") || key.includes("jstart")) typeColor = "bg-orange-100 text-orange-800";
-                if(data.type.includes("DB") || key.includes("db")) typeColor = "bg-slate-200 text-slate-800";
-
-                contentDiv.innerHTML = `
-                    <div class="animate-fade-in-up">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-lg font-bold text-slate-800 leading-tight">${data.title}</h3>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <span class="inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${typeColor}">
-                                ${data.type}
-                            </span>
-                        </div>
-
-                        <div class="mb-4">
-                            <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-1">Function</h4>
-                            <p class="text-sm text-slate-700 leading-relaxed">${data.description}</p>
-                        </div>
-
-                        <div class="bg-slate-50 p-2 rounded border border-slate-200">
-                            <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-1">Technical Detail</h4>
-                            <p class="text-xs font-mono text-slate-600">${data.tech}</p>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        document.addEventListener('click', function(e) {
-            const clickedBox = e.target.closest('.diagram-box') || e.target.closest('.sub-box');
-            if (clickedBox) clickedBox.classList.add('active');
-        });
-    </script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
