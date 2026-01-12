@@ -1,6 +1,6 @@
 # SAP System Architecture Components
 
-This document defines the logical structure and component details for the **Dual Stack** and **Java Stack** architectures.
+This document defines the logical structure and component details for the **Dual Stack**, **Java Stack**, and **ABAP Stack** architectures.
 
 ## 1. Dual Stack Architecture
 *Logical view of an SAP Dual Stack (ABAP + Java) system running on a single host.*
@@ -171,3 +171,77 @@ This document defines the logical structure and component details for the **Dual
         *   **Components**:
             *   **hdbindexserver**: Main DB engine. Stores Java Schema.
             *   **hdbdaemon**: Database background daemon.
+
+---
+
+## 3. ABAP Stack Architecture
+*Logical view of a distributed SAP NetWeaver AS ABAP system.*
+
+### 3.1 Client Layer
+*   **SAP GUI**
+    *   **Type**: Client Application
+    *   **Description**: Desktop client application for accessing SAP systems using DIAG protocol.
+    *   **Details**:
+        *   Traditional thick client used for ABAP stack access
+        *   Communicates via DIAG protocol (compressed)
+        *   Supports rich UI features, OLE automation, and offline capabilities
+
+*   **Web Browser**
+    *   **Type**: Client Application
+    *   **Description**: Modern web-based access to SAP applications via HTTP/HTTPS.
+    *   **Details**:
+        *   Access point for Fiori Launchpad, WebDynpro, and SAP GUI for HTML
+        *   Zero-footprint client (no installation required)
+        *   Uses HTTPS protocol with TLS encryption
+
+### 3.2 External Layer
+*   **SAP Web Dispatcher**
+    *   **Type**: Reverse Proxy / Load Balancer
+    *   **Description**: Software entry point for HTTP(S) requests.
+    *   **Details**:
+        *   Load balancing (Logon Groups)
+        *   SSL termination
+        *   URL filtering and security
+
+### 3.3 Infrastructure Layer
+
+#### 3.3.1 Level 1: Central Services
+*   **VM/Host: sap-ascs-host**
+    *   **OS**: Linux (RHEL/SLES)
+    *   **SAP Instance: ASCS00 (ASCS)**
+        *   **Type**: Central Services Instance
+        *   **Instance #**: 00
+        *   **Components**:
+            *   **Message Server (ms)**: Handles login load balancing and internal cluster communication.
+            *   **Enqueue Server (en)**: Manages the logical lock table for data consistency.
+            *   **sapstartsrv**: Host/Instance Agent service.
+
+#### 3.3.2 Level 2: Application Servers
+*   **VM/Host: sap-pas-01**
+    *   **OS**: Linux (RHEL/SLES)
+    *   **SAP Instance: Primary App Server (PAS)**
+        *   **Type**: Primary Application Server
+        *   **Instance #**: 01
+        *   **Components**:
+            *   **ICM (Internet Comm. Mgr)**: Handles HTTP/HTTPS protocols.
+            *   **Gateway (gw)**: RFC interface/communication.
+            *   **ABAP Dispatcher**: Distributes requests to work processes.
+            *   **Shared Memory**: PXA, Table Buffer, Roll Area.
+            *   **Work Processes**:
+                *   **DIA**: Dialog (Interactive users)
+                *   **BTC**: Batch (Background jobs)
+                *   **UPD**: Update (Database commits)
+                *   **SPO**: Spool (Printing)
+
+*   **VM/Host: sap-abap-aas-xx** (Dynamic)
+    *   **SAP Instance: Additional App Server (AAS)**
+    *   **Details**: Scalable instances added for capacity. Identical to PAS but without Singleton restrictions.
+
+#### 3.3.3 Level 3: Database
+*   **VM/Host: sap-db-host**
+    *   **OS**: Linux
+    *   **SAP Instance: Database (DBMS)**
+        *   **Type**: Database Instance (e.g., HANA)
+        *   **Components**:
+            *   **HANA Index Server**: Core database engine.
+            *   **Persistence**: Primary data storage (ABAP Schema).
