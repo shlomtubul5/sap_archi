@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SAP NetWeaver AS ABAP – Infrastructure & Hierarchy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-[98%] mx-auto flex flex-col gap-1">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <span class="text-2xl">🛠️</span>
+                SAP NetWeaver AS ABAP <span class="text-slate-400 font-normal text-sm ml-2">System Architecture</span>
+            </h1>
+            <p class="text-xs text-slate-400 max-w-[90%]">
+                Client → External → Central Services → App Servers → Database
+            </p>
+        </div>
+    </header>
+
+    <main class="wrap px-4 py-6 flex-grow flex flex-col gap-4 h-[calc(100vh-80px)]">
+        
+        <!-- Controls & Legend -->
+        <section class="controls flex flex-wrap items-center gap-4 bg-white p-3 rounded-xl shadow border border-slate-200 sticky top-[72px] z-40">
+            <div class="scaling-controls flex gap-2">
+                <button class="px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded text-xs font-bold hover:bg-blue-100 transition-colors" onclick="addAbapAppServer()">
+                    + Add App Server
+                </button>
+                <button class="px-3 py-1 bg-red-50 border border-red-200 text-red-700 rounded text-xs font-bold hover:bg-red-100 transition-colors" onclick="removeAbapAppServer()">
+                    − Remove App Server
+                </button>
+            </div>
+
+            <div class="flex-grow"></div>
+
+            <div class="legend flex gap-3 text-[10px] text-slate-500">
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>Infra</div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-600 border border-white"></span>VM</div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-100 border border-blue-300"></span>SAP Instance</div>
+                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-white border-2 border-slate-300"></span>Process</div>
+            </div>
+        </section>
+
+        <!-- Diagram Workspace -->
+        <section class="diagram-shell flex-grow rounded-xl bg-slate-100 border border-slate-300 shadow-inner overflow-auto relative">
+            <div class="canvas-wrapper p-10 min-w-full min-h-full inline-block">
+                <div class="canvas relative w-[1000px] max-w-full mx-auto" id="canvas">
+
+                    <!-- CLIENT LAYER -->
+                    <div class="layer-wrapper mb-8 flex justify-center gap-16">
+                        <div onclick="showInfo('sapgui')" class="box bg-white border-2 border-blue-200 rounded-lg p-3 shadow-sm cursor-pointer w-40 text-center hover:-translate-y-1 transition-transform">
+                            <div class="text-2xl mb-1">🖥️</div>
+                            <p class="font-bold text-xs text-slate-700">SAP GUI</p>
+                            <p class="text-[9px] text-slate-400">DIAG / RFC</p>
+                        </div>
+                        <div onclick="showInfo('browser')" class="box bg-white border-2 border-orange-200 rounded-lg p-3 shadow-sm cursor-pointer w-40 text-center hover:-translate-y-1 transition-transform">
+                            <div class="text-2xl mb-1">🌐</div>
+                            <p class="font-bold text-xs text-slate-700">Web Browser</p>
+                            <p class="text-[9px] text-slate-400">HTTP / Fiori</p>
+                        </div>
+                    </div>
+
+                    <!-- EXTERNAL LAYER -->
+                    <div class="external-layer bg-green-50 border border-green-200 rounded-2xl p-4 mb-8 shadow-sm">
+                        <div class="layer-header flex items-center gap-3 mb-4 border-b border-green-100 pb-2">
+                           <div class="text-green-600 text-lg">🛡️</div>
+                           <h2 class="text-sm font-bold text-green-900 uppercase tracking-wide">External / DMZ Layer</h2>
+                        </div>
+                        <div class="flex justify-center">
+                            <div onclick="showInfo('webdispatcher')" class="box bg-white border border-green-300 rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer w-[400px] flex items-center gap-4">
+                                <div class="text-2xl">🚦</div>
+                                <div>
+                                    <p class="box-title text-sm font-bold text-green-800">SAP Web Dispatcher</p>
+                                    <p class="box-desc text-[10px] text-slate-500">Reverse Proxy, Load Balancer, SSL Termination</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SYSTEM INFRASTRUCTURE -->
+                    <div class="fluid-infra space-y-8">
+
+                        <!-- Level 1: Central Services -->
+                        <div class="vm-level-wrapper">
+                            <div class="vm-level-title text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2 text-center">Central Services</div>
+                            <div class="vm-level-content flex justify-center">
+                                <!-- ASCS VM -->
+                                <div onclick="showInfo('vm')" class="vm-container bg-slate-200 border-2 border-dashed border-slate-400 rounded-xl p-3 shadow-sm cursor-pointer w-[400px]">
+                                    <div class="vm-header flex items-center gap-2 mb-3 bg-white p-2 rounded border border-slate-200 shadow-sm text-xs text-slate-500">
+                                        <span>💻</span> <span class="vm-title font-bold text-slate-700">VM: sap-ascs-host</span>
+                                        <span class="ml-auto font-mono text-[9px]">2 vCPU | 8GB</span>
+                                    </div>
+
+                                    <div onclick="showInfo('os_layer')" class="os-layer bg-sky-50 border border-sky-200 rounded-lg p-2 mb-3">
+                                        <div class="os-header mb-2 text-[10px] font-bold text-sky-700 flex items-center gap-1">
+                                            <span>🐧</span> OS: Linux
+                                        </div>
+
+                                        <!-- ASCS INSTANCE -->
+                                        <div onclick="showInfo('ascs_instance'); event.stopPropagation()" class="sap-instance bg-blue-100 border border-blue-300 rounded-lg p-2.5 shadow-sm">
+                                            <div class="instance-header flex items-center gap-2 mb-2 bg-white/60 p-1.5 rounded border border-blue-200">
+                                                <span>⚙️</span>
+                                                <h5 class="instance-title text-[11px] font-bold text-blue-900">ASCS Instance</h5>
+                                                <span class="instance-id text-[8px] text-slate-400 ml-auto">Instance# 00</span>
+                                            </div>
+
+                                            <div class="grid grid-cols-2 gap-2">
+                                                <div onclick="showInfo('msg_server'); event.stopPropagation()" class="process-box bg-white border border-blue-200 rounded p-2 text-center hover:shadow hover:bg-blue-50 transition-colors">
+                                                    <div class="text-sm">📨</div>
+                                                    <p class="text-[10px] font-bold text-blue-800">Message Server</p>
+                                                </div>
+                                                <div onclick="showInfo('enqueue_server'); event.stopPropagation()" class="process-box bg-white border border-blue-200 rounded p-2 text-center hover:shadow hover:bg-blue-50 transition-colors">
+                                                    <div class="text-sm">🔒</div>
+                                                    <p class="text-[10px] font-bold text-blue-800">Enqueue Server</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- sapstartsrv (small generic) -->
+                                            <div onclick="showInfo('sapstartsrv'); event.stopPropagation()" class="mt-2 p-1 bg-slate-50 border border-slate-200 rounded text-center text-[9px] text-slate-400 hover:bg-slate-100">
+                                                sapstartsrv
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Level 2: App Servers -->
+                        <div class="vm-level-wrapper">
+                            <div class="vm-level-title text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2 text-center">Application Servers</div>
+                            <div class="vm-level-content flex flex-wrap justify-center gap-4" id="abapAppServersList">
+                                
+                                <!-- PAS VM -->
+                                <div onclick="showInfo('vm')" class="vm-container bg-slate-200 border-2 border-dashed border-slate-400 rounded-xl p-3 shadow-sm cursor-pointer w-[400px]">
+                                    <div class="vm-header flex items-center gap-2 mb-3 bg-white p-2 rounded border border-slate-200 shadow-sm text-xs text-slate-500">
+                                        <span>💻</span> <span class="vm-title font-bold text-slate-700">VM: sap-pas-01</span>
+                                        <span class="ml-auto font-mono text-[9px]">8 vCPU | 32GB</span>
+                                    </div>
+
+                                    <div onclick="showInfo('os_layer')" class="os-layer bg-sky-50 border border-sky-200 rounded-lg p-2 mb-3">
+                                        <div class="os-header mb-2 text-[10px] font-bold text-sky-700 flex items-center gap-1">
+                                            <span>🐧</span> OS: Linux
+                                        </div>
+
+                                        <!-- PAS INSTANCE -->
+                                        <div onclick="showInfo('pas_instance'); event.stopPropagation()" class="sap-instance bg-blue-100 border border-blue-300 rounded-lg p-2.5 shadow-sm">
+                                            <div class="instance-header flex items-center gap-2 mb-2 bg-white/60 p-1.5 rounded border border-blue-200">
+                                                <span>⚙️</span>
+                                                <h5 class="instance-title text-[11px] font-bold text-blue-900">Primary App Server (PAS)</h5>
+                                                <span class="instance-id text-[8px] text-slate-400 ml-auto">Instance# 01</span>
+                                            </div>
+
+                                            <!-- Core Dispatcher & Gateway -->
+                                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                                <div onclick="showInfo('icm'); event.stopPropagation()" class="process-box bg-purple-50 border border-purple-200 rounded p-1.5 text-center">
+                                                    <p class="text-[9px] font-bold text-purple-800">ICM (Web)</p>
+                                                </div>
+                                                <div onclick="showInfo('gateway'); event.stopPropagation()" class="process-box bg-orange-50 border border-orange-200 rounded p-1.5 text-center">
+                                                    <p class="text-[9px] font-bold text-orange-800">Gateway (RFC)</p>
+                                                </div>
+                                            </div>
+
+                                            <div onclick="showInfo('dispatcher'); event.stopPropagation()" class="process-box bg-blue-600 text-white rounded p-2 mb-2 text-center shadow-md">
+                                                <p class="text-[10px] font-bold">ABAP Dispatcher</p>
+                                                <p class="text-[8px] opacity-80">Queue Management</p>
+                                            </div>
+
+                                            <!-- Work Processes -->
+                                            <div class="bg-slate-50 border border-slate-200 rounded p-2 mb-2">
+                                                <p class="text-[9px] text-slate-400 mb-1 text-center font-bold">Work Processes</p>
+                                                <div class="grid grid-cols-3 gap-1">
+                                                    <div onclick="showInfo('wp_dia'); event.stopPropagation()" class="p-1 border border-blue-200 bg-white rounded text-[9px] text-center font-bold text-blue-700 hover:bg-blue-50">DIA</div>
+                                                    <div onclick="showInfo('wp_dia'); event.stopPropagation()" class="p-1 border border-blue-200 bg-white rounded text-[9px] text-center font-bold text-blue-700 hover:bg-blue-50">DIA</div>
+                                                    <div onclick="showInfo('wp_dia'); event.stopPropagation()" class="p-1 border border-blue-200 bg-white rounded text-[9px] text-center font-bold text-blue-700 hover:bg-blue-50">DIA</div>
+                                                    <div onclick="showInfo('wp_btc'); event.stopPropagation()" class="p-1 border border-orange-200 bg-white rounded text-[9px] text-center font-bold text-orange-700 hover:bg-orange-50">BTC</div>
+                                                    <div onclick="showInfo('wp_upd'); event.stopPropagation()" class="p-1 border border-green-200 bg-white rounded text-[9px] text-center font-bold text-green-700 hover:bg-green-50">UPD</div>
+                                                    <div onclick="showInfo('wp_spo'); event.stopPropagation()" class="p-1 border border-yellow-200 bg-white rounded text-[9px] text-center font-bold text-yellow-700 hover:bg-yellow-50">SPO</div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Shared Memory -->
+                                            <div onclick="showInfo('shared_memory'); event.stopPropagation()" class="process-box border border-dashed border-slate-400 bg-slate-100 rounded p-1 text-center text-[9px] text-slate-500">
+                                                Shared Memory (PXA / Roll / Buffer)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Level 3: Database -->
+                        <div class="vm-level-wrapper">
+                            <div class="vm-level-title text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2 text-center">Database</div>
+                            <div class="vm-level-content flex justify-center">
+                                <div onclick="showInfo('vm')" class="vm-container bg-slate-200 border-2 border-dashed border-slate-400 rounded-xl p-3 shadow-sm cursor-pointer w-[400px]">
+                                    <div class="vm-header flex items-center gap-2 mb-3 bg-white p-2 rounded border border-slate-200 shadow-sm text-xs text-slate-500">
+                                        <span>💻</span> <span class="vm-title font-bold text-slate-700">VM: sap-db-host</span>
+                                        <span class="ml-auto font-mono text-[9px]">16 vCPU | 128GB</span>
+                                    </div>
+                                    
+                                    <div onclick="showInfo('os_layer')" class="os-layer bg-sky-50 border border-sky-200 rounded-lg p-2">
+                                         <div onclick="showInfo('database'); event.stopPropagation()" class="sap-instance bg-slate-800 text-white rounded-lg p-4 shadow-md text-center border-b-4 border-slate-900 hover:translate-y-px transition-transform">
+                                            <div class="text-3xl mb-1">🗄️</div>
+                                            <h5 class="text-sm font-bold">SAP HANA Database</h5>
+                                            <p class="text-[10px] text-slate-400 mt-1">Primary Persistence</p>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- End System Infra -->
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal -->
+    <div id="componentModal" class="modal">
+        <div class="modal-content bg-white rounded-xl shadow-2xl w-[90%] max-w-[500px] overflow-hidden border border-slate-200">
+            <div class="modal-header bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center">
+                <h2 id="modalTitle" class="text-base font-bold text-slate-800 flex items-center gap-2">Component Info</h2>
+                <button id="modalClose" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+            <div id="modalBody" class="p-6 text-sm text-slate-600 space-y-4 max-h-[70vh] overflow-y-auto">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

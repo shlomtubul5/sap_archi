@@ -1,0 +1,58 @@
+:root {
+  /* JS Compatibility Variables */
+  --vm-base-width: 360px;
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --ink: #1e293b;
+  --muted: #64748b;
+  --line: #cbd5e1;
+}
+
+/* Canvas Transformations for Zoom (Script.js relies on this) */
+.canvas {
+  transform-origin: top center; 
+  transition: transform 0.2s ease-out;
+}
+
+/* Modal Styling - Script.js adds '.show' class */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.modal.show {
+  display: flex !important; /* Script.js expects flex display when shown */
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* View Switcher Active State (Script.js toggles .active) */
+.view-btn.active {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-color: #3b82f6;
+}
+
+/* Flow Arrows (Placeholder if flow view is added later) */
+.flow-arrow {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  color: #94a3b8; /* slate-400 */
+}
